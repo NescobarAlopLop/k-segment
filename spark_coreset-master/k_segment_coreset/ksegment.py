@@ -111,6 +111,8 @@ def calc_coreset_prep_dist(D):
     return prep_dist
 
 
+
+
 def calc_weighted_prep_dist(pw):
     prep_dist = np.full((len(pw), len(pw)), float("inf"))
     for index, value in np.ndenumerate(prep_dist):
