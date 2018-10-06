@@ -26,7 +26,7 @@ def calc_best_fit_line(P):
         time_array = P[:, 0]
         A = np.vstack([time_array, np.ones(n)]).T
         data = P[:, 1:]
-        return np.linalg.lstsq(A, data)[0]
+        return np.linalg.lstsq(A, data, rcond=None)[0]
     except:
         print "error in calc_best_fit_line" + P
 
@@ -44,15 +44,13 @@ def calc_best_fit_line_polyfit(P, W=False, is_coreset=False):
         print "error in calc_best_fit_line polyfit" + "\nis coreset: " + is_coreset.__str__()
 
 
-def sqrd_dist_sum(P, line):
+def sqrd_dist_sum(points, line):
     try:
-        time_array = P[:, 0]
-        A = np.vstack([time_array, np.ones(len(time_array))]).T
-        data = P[:, 1:]
-        projected_points = np.dot(A, line)
-        norm_vector = np.apply_along_axis(np.linalg.norm, axis=1, arr=data - projected_points)
-        squared_norm_distances = np.square(norm_vector)
-        return sum(squared_norm_distances)
+        time_array = points[:, 0]
+        tmp = np.vstack([time_array, np.ones(len(time_array))]).T
+        data = points[:, 1:]
+        projected_points = np.dot(tmp, line)
+        return ((projected_points - data) ** 2).sum(axis=None)
     except:
         print "error in sqrd_dist_sum"
 
