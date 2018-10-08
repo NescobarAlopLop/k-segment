@@ -12,9 +12,9 @@ class OneSegCoreset:
         self.SVt = SVt
 
 
-class coreset:
-    def __init__(self, C, g, b, e):
-        self.C = C  # 1-segment coreset
+class Coreset:
+    def __init__(self, coreset, g, b, e):
+        self.C = coreset  # 1-segment coreset
         self.g = g  # best line
         self.b = b  # coreset beginning index
         self.e = e  # coreset ending index
@@ -23,32 +23,32 @@ class coreset:
         return "OneSegmentCoreset " + str(self.b) + "-" + str(self.e) + "\n" + str(self.C.repPoints) + "\n"
 
 
-def build_coreset(P, k, eps, is_coreset=False):
-    h = bicriteria(P, k, is_coreset)
-    print "bicritiria estimate:", h
-    b = (eps ** 2 * h) / (100 * k * np.log2(len(P)))
-    return BalancedPartition(P, eps, b, is_coreset)
+def build_coreset(points, k, eps, is_coreset=False):
+    h = bicriteria(points, k, is_coreset)
+    print("bicritiria estimate:", h)
+    b = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
+    return BalancedPartition(points, eps, b, is_coreset)
 
 
-def one_seg_cost(P, is_coreset=False):
+def one_seg_cost(points, is_coreset=False):
     if is_coreset:
-        one_segment_coreset = OneSegmentCorset(P, is_coreset)
+        one_segment_coreset = OneSegmentCorset(points, is_coreset)
         return utils.best_fit_line_cost(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
     else:
-        return utils.best_fit_line_cost(P, is_coreset)
+        return utils.best_fit_line_cost(points, is_coreset)
 
 
-def bicriteria(P, k, is_coreset=False):
-    if len(P) <= (4 * k + 1):
-        return one_seg_cost(P, is_coreset)
-    m = int(math.floor(len(P) / (4 * k)))
+def bicriteria(points, k, is_coreset=False):
+    if len(points) <= (4 * k + 1):
+        return one_seg_cost(points, is_coreset)
+    m = int(math.floor(len(points) / (4 * k)))
     i = 0
     j = m
     # one_seg_res will  hold segment starting index and result (squared distance sum)
     one_seg_res = []
     # partition to 4k segments and call 1-segment for each
-    while i < len(P):
-        partition_set = one_seg_cost(P[i:j], is_coreset)
+    while i < len(points):
+        partition_set = one_seg_cost(points[i:j], is_coreset)
         one_seg_res.append((partition_set, int(i)))
         i += m
         j += m
@@ -58,28 +58,28 @@ def bicriteria(P, k, is_coreset=False):
     res = 0
     # sum distances of k+1 min segments and make a list of point to delete from P to get P \ Q from the algorithm
     rows_to_delete = []
-    for i in xrange(k + 1):
+    for i in range(k + 1):
         res += one_seg_res[i][0]
-        for j in xrange(m):
+        for j in range(m):
             rows_to_delete.append(one_seg_res[i][1] + j)
-    P = np.delete(P, rows_to_delete, axis=0)
-    c = bicriteria(P, k, is_coreset)
+    points = np.delete(points, rows_to_delete, axis=0)
+    c = bicriteria(points, k, is_coreset)
     if type(res) != type(c):
         print c
     return res + c
 
 
-def bicriteria2(P, k, is_coreset=False):
-    if len(P) <= (4 * k + 1):
+def bicriteria2(points, k, is_coreset=False):
+    if len(points) <= (4 * k + 1):
         return 0 # TODO changes
-    m = int(math.floor(len(P) / (4 * k)))
+    m = int(math.floor(len(points) / (4 * k)))
     i = 0
     j = m
     # one_seg_res will  hold segment starting index and result (squred distance sum)
     one_seg_res = []
     # partition to 4k segments and call 1-segment for each
-    while i < len(P):
-        partition_set = one_seg_cost(P[i:j], is_coreset)
+    while i < len(points):
+        partition_set = one_seg_cost(points[i:j], is_coreset)
         one_seg_res.append((partition_set, int(i)))
         i += m
         j += m
@@ -89,12 +89,12 @@ def bicriteria2(P, k, is_coreset=False):
     res = 0
     # sum distances of k+1 min segments and make a list of point to delete from P to get P \ Q from the algo'
     rows_to_delete = []
-    for i in xrange(k + 1):
+    for i in range(k + 1):
         res += one_seg_res[i][0]
-        for j in xrange(m):
+        for j in range(m):
             rows_to_delete.append(one_seg_res[i][1] + j)
-    P = np.delete(P, rows_to_delete, axis=0)
-    return res + bicriteria(P, k, is_coreset)
+    points = np.delete(points, rows_to_delete, axis=0)
+    return res + bicriteria(points, k, is_coreset)
 
 
 def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
@@ -108,7 +108,7 @@ def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
     else:
         points = np.vstack((points, np.zeros(dimensions)))  # arbitrary point n+1
     n = len(points)
-    for i in xrange(0, n):
+    for i in range(0, n):
         Q.append(points[i])
         cost = one_seg_cost(np.asarray(Q), is_coreset)
         # if current number of points can be turned into a coreset - 3 conditions :
@@ -130,7 +130,7 @@ def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
             else:
                 b = T[0][0]     # signal index of first item in T
                 e = T[-1][0]    # signal index of last item in T
-            D.append(coreset(C, g, b, e))
+            D.append(Coreset(C, g, b, e))
             Q = [Q[-1]]
     return D
 
@@ -157,7 +157,7 @@ def OneSegmentCorset(P, is_coreset=False):
     try:
         q[:, 0] = u / np.linalg.norm(u)
     except:
-        print "iscoreset:", is_coreset, "P", P, "u:", u, "q:", q
+        print("iscoreset:", is_coreset, "P", P, "u:", u, "q:", q)
     Q = np.linalg.qr(q)[0]      # QR decomposition returns in Q what is requested
     if np.allclose(Q[:, 0], -q[:, 0]):
         Q = -Q
@@ -185,12 +185,12 @@ def PiecewiseCoreset(n, eps):
     def s(index, points_number):
         return max(4.0 / float(index), 4.0 / (points_number - index + 1))
     eps = eps / np.log2(n)
-    s_arr = [s(i, n) for i in xrange(1, n + 1)]
+    s_arr = [s(i, n) for i in range(1, n + 1)]
     t = sum(s_arr)
     B = []
     b_list = []
     W = np.zeros(n)
-    for i in xrange(1, n + 1):
+    for i in range(1, n + 1):
         b = math.ceil(sum(s_arr[0:i]) / (t * eps))
         if b not in b_list:
             B.append(i)
