@@ -21,13 +21,12 @@ class Stream(object):
         self.coreset_size = coreset_size
         self.k = k
 
-
     def _merge(self, pset1, pset2):
         points = np.vstack([pset1.points, pset2.points])
         weights = np.hstack([pset1.weights, pset2.weights])
         cset = self.coreset_alg(points, self.k, weights)
         coreset, weights = cset.compute(self.coreset_size)
-        return WeightedPointSet(coreset,weights)
+        return WeightedPointSet(coreset, weights)
 
     def _add_leaf(self, points, weights):
         if weights is None:
@@ -51,6 +50,7 @@ class Stream(object):
             coreset = self._merge(last.coreset, coreset)
             level += 1
         self.stack.push(StackItem(coreset, level))
+
     def add_points(self, points):
         """Add a set of points to the stream.
 
@@ -59,7 +59,7 @@ class Stream(object):
         """
 
         for split in np.array_split(points, self.leaf_size):
-                self._add_leaf(split,None)
+                self._add_leaf(split, None)
 
     def get_unified_coreset(self):
         solution = None

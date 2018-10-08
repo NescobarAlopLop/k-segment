@@ -69,6 +69,34 @@ def bicriteria(P, k, is_coreset=False):
     return res + c
 
 
+def bicriteria2(P, k, is_coreset=False):
+    if len(P) <= (4 * k + 1):
+        return 0 # TODO changes
+    m = int(math.floor(len(P) / (4 * k)))
+    i = 0
+    j = m
+    # one_seg_res will  hold segment starting index and result (squred distance sum)
+    one_seg_res = []
+    # partition to 4k segments and call 1-segment for each
+    while i < len(P):
+        partition_set = one_seg_cost(P[i:j], is_coreset)
+        one_seg_res.append((partition_set, int(i)))
+        i += m
+        j += m
+    # sort result
+    one_seg_res = sorted(one_seg_res, key=lambda res: res[0])
+    # res = the distances of the min k+1 segments
+    res = 0
+    # sum distances of k+1 min segments and make a list of point to delete from P to get P \ Q from the algo'
+    rows_to_delete = []
+    for i in xrange(k + 1):
+        res += one_seg_res[i][0]
+        for j in xrange(m):
+            rows_to_delete.append(one_seg_res[i][1] + j)
+    P = np.delete(P, rows_to_delete, axis=0)
+    return res + bicriteria(P, k, is_coreset)
+
+
 def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
     Q = []
     D = []

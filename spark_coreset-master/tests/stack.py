@@ -1,10 +1,13 @@
 __author__ = 'Anton'
+
+
 class Stack(object):
     """
     A very simple implementation for stack data structure.
     """
     def __init__(self):
-        self.items=[]
+        self.items = []
+
     def is_empty(self):
         return self.items == []
 

@@ -30,9 +30,11 @@ def init_spark(open_sc=1):
     # import Coreset
     return sc, config, infile
 
+
 if __name__ == "__main__":
     def readPointBatch(Int,iterator):
-        return [(Int/2, [pd.read_csv(StringIO("\n".join(iterator)), header=None, delim_whitespace=True,dtype=np.float64).as_matrix(), None])]
+        return [(Int/2, [pd.read_csv(StringIO("\n".join(iterator)), header=None,
+                                     delim_whitespace=True, dtype=np.float64).as_matrix(), None])]
 
     # def merge(a, b):
     #     points = np.vstack((a[0], b[0]))

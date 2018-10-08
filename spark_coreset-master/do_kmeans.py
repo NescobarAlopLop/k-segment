@@ -9,8 +9,8 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-k', '--num_means', default=2, help="k for k-means")
-    parser.add_argument('-i', '--input', default="2c300k_dataset.txt", help="input txt file")
+    parser.add_argument('-k', '--num_means', default=3, help="k for k-means")
+    parser.add_argument('-i', '--input', default="/home/ge/k-segment/spark_coreset-master/k_segment_coreset/input.csv", help="input txt file")
     parser.add_argument('-v', '--verbose', default=3, help="verbose printing. 1: header, 2: cost, 3: centers, 6: points")
     args = parser.parse_args()
     return args

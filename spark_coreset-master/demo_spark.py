@@ -3,6 +3,7 @@ __author__ = 'Ahmad Yasin & Anton Boyko'
 import numpy as np, pandas as pd, time, csv, string
 from cStringIO import StringIO
 import tree, do_kmeans, utils, graph #,spark_kmeans_python
+from spark import tree
 from coreset import Coreset
 from weighted_kmeans import KMeans
 import pyspark.mllib.clustering
