@@ -3,11 +3,12 @@ __author__ = 'Anton'
 import numpy as np
 import utils
 
-class KMeanspp():
-    def __init__(self,points, k, weights=None, n_init=1):
+
+class KMeanspp:
+    def __init__(self, points, k, weights=None, n_init=1):
         self.p = points
         if weights is None:
-            weights = np.ones(points.shape[0],dtype=np.float64)
+            weights = np.ones(points.shape[0], dtype=np.float64)
         self.w = weights
         self.k = k
         self.n_init = n_init
@@ -37,7 +38,8 @@ class KMeanspp():
         
     def compute(self):
         best_cent = self.seed()
-        if self.n_init==1: return best_cent         
+        if self.n_init == 1:
+            return best_cent
         best_cost = np.sum(utils.get_dist_to_centers(self.p, best_cent)*self.w)
         for i in range(self.n_init - 1):
             cent = self.seed()
@@ -46,4 +48,3 @@ class KMeanspp():
                 best_cost = cost
                 best_cent = cent
         return best_cent
-
