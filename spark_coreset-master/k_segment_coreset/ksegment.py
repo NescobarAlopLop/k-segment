@@ -140,7 +140,7 @@ def coreset_k_segment(D, k):
 def coreset_k_segment_fast_segmentation(D, k, eps):
     pw = np.empty((0, 4))
     for coreset in D:
-        pts = utils.pt_on_line(xrange(int(coreset.b), int(coreset.e) + 1), coreset.g)
+        pts = utils.pt_on_line(range(int(coreset.b), int(coreset.e) + 1), coreset.g)
         w = Coreset.PiecewiseCoreset(len(pts[0]), eps)
         p_coreset = np.column_stack((pts[0], pts[1], pts[2], w))
         p_coreset_filtered = p_coreset[p_coreset[:, 3] > 0]

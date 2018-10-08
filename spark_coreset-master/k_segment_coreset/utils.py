@@ -72,7 +72,7 @@ def sqrd_dist_sum_weighted(points, line, w):
 def pt_on_line(x, line):
     coordinates = [x]
     for i in range(len(line[0])):
-        coordinates.append(line[0, i] * x + line[1, i])
+        coordinates.append(line[0, int(i)] * x + line[1, int(i)])
     return coordinates
 
 
@@ -98,7 +98,7 @@ def visualize_3d(points, dividers):
     for i in range(len(dividers) - 1):
         line_start_arr_index = dividers[i] - 1
         line_end_arr_index = dividers[i + 1] - 1 if i != len(dividers) - 2 else dividers[i + 1]
-        segment = points[line_start_arr_index:line_end_arr_index, :]
+        segment = points[int(line_start_arr_index):int(line_end_arr_index), :]
         best_fit_line = calc_best_fit_line_polyfit(segment)
         line_pts_list.append([pt_on_line(dividers[i], best_fit_line),
                               pt_on_line(dividers[i + 1] - (1 if i != len(dividers) - 2 else 0), best_fit_line)])
