@@ -9,10 +9,11 @@ import numpy as np
 from test_framework import TestCoreset
 
 
-x = 1000 # 9900000
-y = 1000 # 9950000
-x_1 = 1000 # 100000
-y_1 = 10000 # 10000000
+x_1 = 10000        # 9900000
+y_1 = 10000        # 9950000
+x_2 = 10000      # 100000
+y_2 = 10000     # 10000000
+
 
 def random_uniform_points(n, m):
     """
@@ -41,7 +42,7 @@ def two_clusters_test(n, m):
     return p.astype(np.float64)
 
 
-points = random_uniform_points(x_1, y_1)
+points = random_uniform_points(x_2, y_2)
 # p = two_clusters_test(30, 1000000)
 k = 5
 test = TestCoreset(points)
