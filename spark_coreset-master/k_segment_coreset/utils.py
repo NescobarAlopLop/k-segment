@@ -78,7 +78,7 @@ def pt_on_line(x, line):
 def calc_cost_dividers(P, dividers):
     cost = 0.0
     for i in xrange(len(dividers) - 1):
-        segment = P[dividers[i] - 1: dividers[i + 1], :]
+        segment = P[int(dividers[i]) - 1: int(dividers[i + 1]), :]
         cost += sqrd_dist_sum(segment, calc_best_fit_line_polyfit(segment))
     return cost
 
