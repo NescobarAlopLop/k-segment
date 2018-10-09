@@ -20,7 +20,7 @@ class NodesInfo:
         self.n = n
         self.k = k
         self.info = np.zeros((n, 2, k))
-        for i in xrange(n):
+        for i in range(n):
             self.info[i][0] = float("inf")
 
 
@@ -44,8 +44,8 @@ def update_node_info(nodes, prep, cur_n, next_n):
 
 def calc_partitions(prep_dist, n, k):
     nodes = NodesInfo(n, k)
-    for i in xrange(n):
-        for j in xrange(i, n):
+    for i in range(n):
+        for j in range(i, n):
             update_node_info(nodes, prep_dist, i, j)
     return nodes
 
@@ -53,7 +53,7 @@ def calc_partitions(prep_dist, n, k):
 def get_x_val_dividers(p, k, nodes):
     next = len(nodes.info) - 1
     result = np.array(p[next][0])
-    for i in reversed(xrange(0, k)):
+    for i in reversed(range(0, k)):
         next = int(nodes.info[next, 1, i])
         x_value = p[next][0]
         result = np.insert(result, 0, x_value)
@@ -109,8 +109,6 @@ def calc_coreset_prep_dist(D):
             fitting_cost = utils.sqrd_dist_sum(coreset_of_coresets.repPoints, best_fit_line)*coreset_of_coresets.weight
             prep_dist[first_coreset, second_coreset] = fitting_cost
     return prep_dist
-
-
 
 
 def calc_weighted_prep_dist(pw):
