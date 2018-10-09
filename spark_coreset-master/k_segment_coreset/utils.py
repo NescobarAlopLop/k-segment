@@ -3,6 +3,13 @@ import mpl_toolkits.mplot3d as m3d
 import matplotlib.pyplot as plt
 
 
+def load_csv_file(path, n_rows=None):
+    rv = np.genfromtxt(path, dtype=float, delimiter=',', encoding='ascii', names=True)
+    if n_rows:
+        rv = rv[:n_rows]
+    return rv
+
+
 def best_fit_line_cost(points, is_coreset=False):
     best_fit_line = calc_best_fit_line_polyfit(points, is_coreset)
     return sqrd_dist_sum(points, best_fit_line)
