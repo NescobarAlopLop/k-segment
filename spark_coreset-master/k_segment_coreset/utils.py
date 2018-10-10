@@ -1,13 +1,7 @@
 import numpy as np
 import mpl_toolkits.mplot3d as m3d
 import matplotlib.pyplot as plt
-
-
-def load_csv_file(path, n_rows=None):
-    rv = np.genfromtxt(path, dtype=float, delimiter=',', encoding='ascii', names=True)
-    if n_rows:
-        rv = rv[:n_rows]
-    return rv
+from datetime import datetime
 
 
 def best_fit_line_cost(points, is_coreset=False):
@@ -115,13 +109,41 @@ def visualize_3d(points, dividers):
     ax.scatter3D(*points.T)
     for line in line_pts_list:
         lint_pts_arr = np.asarray(line)
-        ax.plot3D(*lint_pts_arr.T)
+        ax.plot3D(*lint_pts_arr.T, label='line ')
 
     ax.set_xlabel('time axis')
     ax.set_ylabel('x1 axis')
     ax.set_zlabel('x2 axis')
 
     plt.show()
+
+
+def visualize_2d(points, dividers, coreset_size, show=False):
+    line_pts_list = []
+    all_sgmnt_sqrd_dist_sum = 0
+    for i in range(len(dividers) - 1):
+        line_start_arr_index = dividers[i] - 1
+        line_end_arr_index = dividers[i + 1] - 1 if i != len(dividers) - 2 else dividers[i + 1]
+        segment = points[int(line_start_arr_index):int(line_end_arr_index), :]
+        best_fit_line = calc_best_fit_line_polyfit(segment)
+        line_pts_list.append([pt_on_line(dividers[i], best_fit_line),
+                              pt_on_line(dividers[i + 1] - (1 if i != len(dividers) - 2 else 0), best_fit_line)])
+        all_sgmnt_sqrd_dist_sum += sqrd_dist_sum(segment, best_fit_line)
+
+    plt.scatter(points[:, 0], points[:, 1], s=3)
+    i = 0
+    for line in line_pts_list:
+        lint_pts_arr = np.asarray(line)
+        plt.plot(*lint_pts_arr.T, label=str(i))
+        i += 1
+    plt.suptitle('data size {}, coreset size {}, k = {}, mse for all points = {}'
+                 .format(len(points), coreset_size, len(line_pts_list), all_sgmnt_sqrd_dist_sum))
+    plt.legend()
+    plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))
+    plt.clf()
+    if show:
+        plt.show()
+
 
 
 def is_unitary(m):
