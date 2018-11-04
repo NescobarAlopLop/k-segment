@@ -23,53 +23,45 @@ class Coreset:
         return "OneSegmentCoreset " + str(self.b) + "-" + str(self.e) + "\n" + str(self.C.repPoints) + "\n"
 
 
-def build_coreset(points, k, eps, is_coreset=False):
-    h = bicriteria(points, k, is_coreset)
-    print("bicritiria estimate:", h)
-    b = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
-    return BalancedPartition(points, eps, b, is_coreset)
 
-
-def one_seg_cost(points, is_coreset=False):
-    if is_coreset:
-        one_segment_coreset = OneSegmentCorset(points, is_coreset)
-        return utils.best_fit_line_cost(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
-    else:
-        return utils.best_fit_line_cost(points, is_coreset)
+# def bicriteria(points, k, is_coreset=False):
+#     if len(points) <= (4 * k + 1):
+#         return one_seg_cost(points, is_coreset)
+#     m = int(math.floor(len(points) / (4 * k)))
+#     i = 0
+#     j = m
+#     # one_seg_res will  hold segment starting index and result (squared distance sum)
+#     one_seg_res = []
+#     # partition to 4k segments and call 1-segment for each
+#     while i < len(points):
+#         partition_set = one_seg_cost(points[i:j], is_coreset)
+#         one_seg_res.append((partition_set, int(i)))
+#         i += m
+#         j += m
+#     # sort result
+#     one_seg_res = sorted(one_seg_res, key=lambda res: res[0])
+#     # res = the distances of the min k+1 segments
+#     res = 0
+#     # sum distances of k+1 min segments and make a list of point to delete from P to get P \ Q from the algorithm
+#     rows_to_delete = []
+#     for i in range(k + 1):
+#         res += one_seg_res[i][0]
+#         for j in range(m):
+#             rows_to_delete.append(one_seg_res[i][1] + j)
+#     points = np.delete(points, rows_to_delete, axis=0)
+#     c = bicriteria(points, k, is_coreset)
+#     if type(res) != type(c):
+#         print c
+#     return res + c
 
 
 def bicriteria(points, k, is_coreset=False):
-    if len(points) <= (4 * k + 1):
-        return one_seg_cost(points, is_coreset)
-    m = int(math.floor(len(points) / (4 * k)))
-    i = 0
-    j = m
-    # one_seg_res will  hold segment starting index and result (squared distance sum)
-    one_seg_res = []
-    # partition to 4k segments and call 1-segment for each
-    while i < len(points):
-        partition_set = one_seg_cost(points[i:j], is_coreset)
-        one_seg_res.append((partition_set, int(i)))
-        i += m
-        j += m
-    # sort result
-    one_seg_res = sorted(one_seg_res, key=lambda res: res[0])
-    # res = the distances of the min k+1 segments
-    res = 0
-    # sum distances of k+1 min segments and make a list of point to delete from P to get P \ Q from the algorithm
-    rows_to_delete = []
-    for i in range(k + 1):
-        res += one_seg_res[i][0]
-        for j in range(m):
-            rows_to_delete.append(one_seg_res[i][1] + j)
-    points = np.delete(points, rows_to_delete, axis=0)
-    c = bicriteria(points, k, is_coreset)
-    if type(res) != type(c):
-        print c
-    return res + c
-
-
-def bicriteria2(points, k, is_coreset=False):
+    """
+    :param points:      input dataset of points
+    :param k:           number of segments
+    :param is_coreset:
+    :return:            cost c a
+    """
     if len(points) <= (4 * k + 1):
         return 0 # TODO changes
     m = int(math.floor(len(points) / (4 * k)))
@@ -133,6 +125,21 @@ def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
             D.append(Coreset(C, g, b, e))
             Q = [Q[-1]]
     return D
+
+
+def build_coreset(points, k, eps, is_coreset=False):
+    h = bicriteria(points, k, is_coreset)
+    print("bicritiria estimate:", h)
+    b = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
+    return BalancedPartition(points, eps, b, is_coreset)
+
+
+def one_seg_cost(points, is_coreset=False):
+    if is_coreset:
+        one_segment_coreset = OneSegmentCorset(points, is_coreset)
+        return utils.best_fit_line_cost(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
+    else:
+        return utils.best_fit_line_cost(points, is_coreset)
 
 
 def OneSegmentCorset(P, is_coreset=False):

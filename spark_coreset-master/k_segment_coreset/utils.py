@@ -140,9 +140,9 @@ def visualize_2d(points, dividers, coreset_size, show=False):
                  .format(len(points), coreset_size, len(line_pts_list), all_sgmnt_sqrd_dist_sum))
     plt.legend()
     plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))
-    plt.clf()
     if show:
         plt.show()
+    plt.clf()
 
 
 
