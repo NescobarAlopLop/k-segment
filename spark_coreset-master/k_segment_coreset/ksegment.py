@@ -85,7 +85,7 @@ def get_x_val_dividers_coreset(D, k, nodes):
     # index of the current node to back-trace from
     cur_end_segment_node = len(nodes.info) - 1
     result = np.array(D[cur_end_segment_node].e)
-    for i in reversed(xrange(0,k)):
+    for i in reversed(range(0,k)):
         # get the start of the segment coreset index from the populated nodes.info
         cur_end_segment_node = int(nodes.info[cur_end_segment_node, 1, i])
         x_value = D[cur_end_segment_node].b
