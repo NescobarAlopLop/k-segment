@@ -139,11 +139,11 @@ def visualize_2d(points, dividers, coreset_size, show=False):
     plt.suptitle('data size {}, coreset size {}, k = {}, mse for all points = {}'
                  .format(len(points), coreset_size, len(line_pts_list), all_sgmnt_sqrd_dist_sum))
     plt.legend()
+    print("saving image: {:%Y_%m_%d_%s}.png".format(datetime.now()))
     plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))
     if show:
         plt.show()
     plt.clf()
-
 
 
 def is_unitary(m):

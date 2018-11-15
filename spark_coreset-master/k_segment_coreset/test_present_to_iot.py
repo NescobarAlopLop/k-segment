@@ -12,7 +12,6 @@ def load_csv_file(path, n_rows=None):
     rv = np.loadtxt(path, float, delimiter=',', skiprows=1)
     if n_rows:
         rv = rv[:n_rows]
-
     return rv
 
 
@@ -21,34 +20,29 @@ def generate_input_file(n):
     np.savetxt('input.csv', data, '%.5f', delimiter=' ')
 
 
-def gen_synthetic_graph(n, k, dim=1, deviation=5):
-    sizes_of_subsets = np.ceil(np.random.dirichlet(np.ones(k), size=1) * n)
-    n = int(sum(sum(sizes_of_subsets)))
+def gen_synthetic_graph(n, k, dim=1, deviation=5, h=100):
+    sizes_of_subsets = np.ceil(np.random.dirichlet(np.ones(k), size=1) * n).astype(int)[0]
+    n = int(sum(sizes_of_subsets))
     data = np.zeros(shape=(n, dim + 1))
-    # data = np.zeros(shape=(n, dim))
-    data[:,0] = np.arange(0, n)
-    start = 0
-    up = True
-    for s in sizes_of_subsets:
-        for i in s:
-            stop = int(start + i)
-            print("start {}, stop {}".format(start, stop))
-            for d in range(dim):
-                # if (-1) ** np.random.randint(1,3, size=1)[0] > 0:
-                if up:
-                    data[start:stop, dim] = np.arange(start, stop, 1) + np.random.normal(0, deviation, stop - start)
-                else:
-                    data[start:stop, dim] = \
-                        abs(np.arange(start, start - (stop - start), -1)) + np.random.normal(0, deviation, stop - start)
-            start = stop
-            up = not up
+    # if (-1) ** np.random.randint(1,3, size=1)[0] > 0:
+    data[:, 0] = np.arange(n)
+    stop_idx = 0
+    stop_val = 0
+    for d in range(dim):
+        for s in sizes_of_subsets:
+            start_idx = stop_idx
+            stop_idx += s
+            start_val = stop_val
+            stop_val = np.random.randint(1, h, size=1)[0]
+            data[start_idx:stop_idx, dim] = np.linspace(start_val, stop_val, s) +\
+                                            np.random.normal(0, deviation, stop_idx - start_idx)
     return data
 
 
 class KSegmentTest(unittest.TestCase):
     # cProfile.run('re.compile("test_coreset_merging")')
     def test_foo(self):
-        d = gen_synthetic_graph(110, 5)
+        d = gen_synthetic_graph(n=700, k=7, deviation=3)
         plt.scatter(d[:, 0], d[:, 1], s=3)
         plt.show()
 
@@ -66,21 +60,20 @@ class KSegmentTest(unittest.TestCase):
         utils.visualize_3d(p, dividers)     # Uncomment to see results
 
 
-    def test_KO(self):
-        # generate points
-        k = 3
-        epsilon = 0.5
-        n = 600
-        generate_input_file(n)
-        data = load_csv_file("/home/ge/k-segment/spark_coreset-master/datasets/KO_no_date.csv", n_rows=200)
-        p = np.c_[np.mgrid[1:n + 1], data.T]
+    # def test_KO(self):
+    #     # generate points
+    #     k = 3
+    #     epsilon = 0.5
+    #     n = 600
+    #     generate_input_file(n)
+    #     data = load_csv_file("/home/ge/k-segment/spark_coreset-master/datasets/KO_no_date.csv", n_rows=200)
+    #     p = np.c_[np.mgrid[1:n + 1], data.T]
+    #
+    #     coreset = Coreset.build_coreset(p, k, epsilon)
+    #     dividers = ksegment.coreset_k_segment(coreset, k)
+    #     utils.visualize_2d(p, dividers, len(coreset))     # Uncomment to see results
 
-        coreset = Coreset.build_coreset(p, k, epsilon)
-        dividers = ksegment.coreset_k_segment(coreset, k)
-        utils.visualize_2d(p, dividers, len(coreset))     # Uncomment to see results
-
-
-    def test_basic_demo_synth(self, n=200, k=11, epsilon=0.3):
+    def test_basic_demo_synth(self, n=100, k=5, epsilon=0.1, show=False):
         # k = 11
         # epsilon = 0.2
         # n = 200
@@ -89,12 +82,12 @@ class KSegmentTest(unittest.TestCase):
 
         coreset = Coreset.build_coreset(p, k, epsilon)
         dividers = ksegment.coreset_k_segment(coreset, k)
-        utils.visualize_2d(p, dividers, len(coreset))     # Uncomment to see results
+        utils.visualize_2d(p, dividers, len(coreset), show=show)     # Uncomment to see results
 
     def test_loop(self):
-        n = 800
+        n = 1200
         k = 10
-        for i in range(100, n, 100):
+        for i in range(500, n, 200):
             for j in range(3, k, 2):
                 self.test_basic_demo_synth(n=i, k=j)
 

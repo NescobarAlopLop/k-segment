@@ -26,7 +26,7 @@ def gen_synthetic_graph(n, k, dim=1, deviation=5):
     for s in sizes_of_subsets:
         for i in s:
             stop = int(start + i)
-            print("start {}, stop {}".format(start, stop))
+            # print("start {}, stop {}".format(start, stop))
             for d in range(dim):
                 # if (-1) ** np.random.randint(1,3, size=1)[0] > 0:
                 if up:
@@ -66,3 +66,17 @@ class KSegmentTest(unittest.TestCase):
         for i in range(100, n, 400):
             for j in range(3, k, 3):
                 self.test_basic_demo_synth(n=i, k=j)
+
+    def test_bicriteria2(self):
+        dim = 1
+        n = 12
+        k = 2
+        n, m = 4 * k + 2,50
+        data = np.arange(n * m).reshape((n, m))
+        p = np.c_[np.mgrid[1:data.shape[0] + 1], data]
+        print("test input data\n{}".format(p))
+
+        b = Coreset.bicriteria(data, k)
+        b2 = Coreset.bicriteria2(data, k)
+
+        print(b, b2)
