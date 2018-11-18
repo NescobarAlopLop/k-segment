@@ -1,7 +1,7 @@
 import numpy as np
 import utils
 import ksegment
-import Coreset
+import CoresetKSeg
 import unittest
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -49,7 +49,6 @@ def gen_synthetic_graph(n, k, dim=1, deviation=20, max_diff=40):
 
 
 class KSegmentTest(unittest.TestCase):
-    # cProfile.run('re.compile("test_coreset_merging")')
     @staticmethod
     def test_foo():
         """
@@ -59,7 +58,8 @@ class KSegmentTest(unittest.TestCase):
         plt.scatter(np.arange(len(d)), d, s=3)
         plt.show()
 
-    def test_from_file(self, path=None, n=None, b=0, k=3, eps=0.2, show=False):
+    @staticmethod
+    def test_from_file(path=None, n=None, b=0, k=3, eps=0.2, show=False):
         """
 
         :param path:    str path to file
@@ -85,7 +85,7 @@ class KSegmentTest(unittest.TestCase):
         print("using points {} to {}".format(b, b+n))
         data = data[b:n, :]
         p = np.column_stack((np.arange(1, len(data) + 1), data[:]))
-        coreset = Coreset.build_coreset(p, k, eps)
+        coreset = CoresetKSeg.build_coreset(p, k, eps)
         dividers = ksegment.coreset_k_segment(coreset, k)
         # pass data input as 2d, first col is time, 2nd is average on all data cols
         p = np.column_stack((p[:, 0], np.linalg.norm(p[:, 1:], axis=1)))
