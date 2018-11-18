@@ -1,51 +1,9 @@
 import numpy as np
-import utils
+from utils import load_csv_file, visualize_2d, gen_synthetic_graph
 import ksegment
 import CoresetKSeg
 import unittest
 import matplotlib.pyplot as plt
-import pandas as pd
-# import cProfile
-
-
-def load_csv_file(path):
-    df = pd.read_csv(
-        filepath_or_buffer=path,
-        skiprows=1,
-        encoding='utf8',
-        sep=',',
-        engine='python'
-    )
-    return df.values
-
-
-def gen_synthetic_graph(n, k, dim=1, deviation=20, max_diff=40):
-    """
-    generates synthetic graph with noise
-    :param n: number of data points
-    :param k: number of segments
-    :param dim: number of dimensions per point
-    :param deviation: deviation of noise
-    :param max_diff: maximum difference in value between first and last point of a segment
-    :return: ndarrray of n data points of dimension d, visually split into k segments
-    """
-    sizes_of_subsets = np.ceil(np.random.dirichlet(np.ones(k), size=1) * n).astype(int)[0]
-    n = int(sum(sizes_of_subsets))
-    data = np.zeros(shape=(n, dim))
-    # if (-1) ** np.random.randint(1,3, size=1)[0] > 0:
-    for d in range(dim):
-        stop_idx = 0
-        stop_val = 0
-        for size in sizes_of_subsets:
-            start_idx = stop_idx
-            stop_idx += size
-            start_val = stop_val
-            stop_val = np.random.randint(1, max_diff, size=1)[0]
-            line = np.linspace(start_val, stop_val, size)
-            noise = np.random.normal(0, deviation, stop_idx - start_idx)
-            data[start_idx:stop_idx, d] = line + noise
-
-    return data
 
 
 class KSegmentTest(unittest.TestCase):
@@ -90,7 +48,7 @@ class KSegmentTest(unittest.TestCase):
         # pass data input as 2d, first col is time, 2nd is average on all data cols
         p = np.column_stack((p[:, 0], np.linalg.norm(p[:, 1:], axis=1)))
 
-        utils.visualize_2d(p, dividers, len(coreset), show=show)
+        visualize_2d(p, dividers, len(coreset), show=show)
 
     def test_KO(self):
         """

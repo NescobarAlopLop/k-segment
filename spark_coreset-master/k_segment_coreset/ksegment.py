@@ -1,6 +1,6 @@
 import numpy as np
 import utils
-import Coreset
+import CoresetKSeg
 import warnings
 
 
@@ -51,17 +51,17 @@ def calc_partitions(prep_dist, n, k):
 
 
 def get_x_val_dividers(p, k, nodes):
-    next = len(nodes.info) - 1
-    result = np.array(p[next][0])
+    next_node = len(nodes.info) - 1
+    result = np.array(p[next_node][0])
     for i in reversed(range(0, k)):
-        next = int(nodes.info[next, 1, i])
-        x_value = p[next][0]
+        next_node = int(nodes.info[next_node, 1, i])
+        x_value = p[next_node][0]
         result = np.insert(result, 0, x_value)
     return result
 
 
 def calc_prep_dist(P):
-    prep_dist = np.full((len(P), len(P)),float("inf"))
+    prep_dist = np.full((len(P), len(P)), float("inf"))
     for index, value in np.ndenumerate(prep_dist):
         if index[0] < index[1]:
             segment = P[index[0]:index[1]+1, :]
@@ -75,7 +75,7 @@ def k_segment(P, k):
     # print "distances for each block:\n%s\n" % prep_dist
     result = calc_partitions(prep_dist, len(P), k)
     # print "dynamic programming (Belman) result:\n%s\n" % result.info
-    dividers = get_x_val_dividers(P, k,result)
+    dividers = get_x_val_dividers(P, k, result)
     # print "the x values that divide the points to k segments are:\n%s" % dividers
     return dividers
 
@@ -85,7 +85,7 @@ def get_x_val_dividers_coreset(D, k, nodes):
     # index of the current node to back-trace from
     cur_end_segment_node = len(nodes.info) - 1
     result = np.array(D[cur_end_segment_node].e)
-    for i in reversed(range(0,k)):
+    for i in reversed(range(0, k)):
         # get the start of the segment coreset index from the populated nodes.info
         cur_end_segment_node = int(nodes.info[cur_end_segment_node, 1, i])
         x_value = D[cur_end_segment_node].b
@@ -104,7 +104,7 @@ def calc_coreset_prep_dist(D):
             C = []
             for coreset in D[first_coreset:second_coreset+1]:
                 C.append(coreset)
-            coreset_of_coresets = Coreset.OneSegmentCorset(C, True)
+            coreset_of_coresets = CoresetKSeg.OneSegmentCorset(C, True)
             best_fit_line = utils.calc_best_fit_line_polyfit(coreset_of_coresets.repPoints, True)
             fitting_cost = utils.sqrd_dist_sum(coreset_of_coresets.repPoints, best_fit_line)*coreset_of_coresets.weight
             prep_dist[first_coreset, second_coreset] = fitting_cost
@@ -139,7 +139,7 @@ def coreset_k_segment_fast_segmentation(D, k, eps):
     pw = np.empty((0, 4))
     for coreset in D:
         pts = utils.pt_on_line(range(int(coreset.b), int(coreset.e) + 1), coreset.g)
-        w = Coreset.PiecewiseCoreset(len(pts[0]), eps)
+        w = CoresetKSeg.PiecewiseCoreset(len(pts[0]), eps)
         p_coreset = np.column_stack((pts[0], pts[1], pts[2], w))
         p_coreset_filtered = p_coreset[p_coreset[:, 3] > 0]
         # print "weighted points", p_coreset_filtered
