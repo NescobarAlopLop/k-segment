@@ -52,11 +52,24 @@ class KSegmentTest(unittest.TestCase):
     # cProfile.run('re.compile("test_coreset_merging")')
     @staticmethod
     def test_foo():
+        """
+        visual test for synthetic graph generation
+        """
         d = gen_synthetic_graph(n=400, k=7, deviation=1, max_diff=15)
         plt.scatter(np.arange(len(d)), d, s=3)
         plt.show()
 
     def test_from_file(self, path=None, n=None, b=0, k=3, eps=0.2, show=False):
+        """
+
+        :param path:    str path to file
+        :param n:       int number of point to take starting at b
+        :param b:       int take points starting from line b
+        :param k:       int number of segments
+        :param eps:     float epsilon error
+        :param show:    bool show plots
+        :return:
+        """
         if not path:
             data = gen_synthetic_graph(n=200, k=k, dim=2, deviation=2, max_diff=30)
         else:
@@ -80,15 +93,27 @@ class KSegmentTest(unittest.TestCase):
         utils.visualize_2d(p, dividers, len(coreset), show=show)
 
     def test_KO(self):
+        """
+        run k-segmentation coreset on CocaCola stock price
+        """
         self.test_from_file("../datasets/KO_no_date.csv", n=600, b=940, k=8, show=False)
 
     def test_chunk_num_1(self):
+        """
+        run k-segmentation coreset on iotshield input test
+        """
         self.test_from_file("../datasets/chunk_num_1.csv", n=100, b=100, show=False)
 
     def test_basic_demo_synth(self):
+        """
+        run k-segmentation on random data with default values
+        """
         self.test_from_file(show=True)
 
     def test_loop(self):
+        """
+        generate graphs for random data
+        """
         n = 1200
         k = 10
         for i in range(500, n, 200):
