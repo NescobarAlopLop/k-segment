@@ -65,22 +65,21 @@ class CoresetKSeg(object):
 #         print c
 #     return res + c
 
-
-def bicriteria(points, k, is_coreset=False):
+def bicriteria(points, k, f=[], mul=4, is_coreset=False):
     """
     :param points:      input dataset of points
     :param k:           number of segments
     :param is_coreset:
     :return:            cost c a
     """
-    if len(points) <= (4 * k + 1):
+    if len(points) <= (mul * k + 1):
         return 0 # TODO changes
-    m = int(math.floor(len(points) / (4 * k)))
+    m = int(math.floor(len(points) / (mul * k)))
     i = 0
     j = m
     # one_seg_res will  hold segment starting index and result (squred distance sum)
     one_seg_res = []
-    # partition to 4k segments and call 1-segment for each
+    # partition to mul*k segments and call 1-segment for each
     while i < len(points):
         partition_set = one_seg_cost(points[i:j], is_coreset)
         one_seg_res.append((partition_set, int(i)))
@@ -97,27 +96,27 @@ def bicriteria(points, k, is_coreset=False):
         for j in range(m):
             rows_to_delete.append(one_seg_res[i][1] + j)
     points = np.delete(points, rows_to_delete, axis=0)
-    return res + bicriteria(points, k, is_coreset)
+    return res + bicriteria(points, k, f, mul, is_coreset)
 
 
-def bicriteria2(points, k, is_coreset=False):
+def bicriteria2(points, k, f, mul=4, is_coreset=False):
     """
     :param points:      input dataset of points
     :param k:           number of segments
     :param is_coreset:
     :return:            cost c a
     """
-    if len(points) <= (4 * k + 1):
+    if len(points) <= (mul * k + 1):
         return 0 # TODO changes
-    m = int(math.floor(len(points) / (4 * k)))
+    m = int(math.floor(len(points) / (mul * k)))
     i = 0
     j = m
     # one_seg_res will  hold segment starting index and result (squred distance sum)
     one_seg_res = []
     # partition to 4k segments and call 1-segment for each
     while i < len(points):
-        # partition_set = one_seg_cost(points[i:j], is_coreset)
-        partition_set = bicriteria(points[i:j], k, is_coreset)
+        partition_set = one_seg_cost(points[i:j], is_coreset)
+        # partition_set = bicriteria(points[i:j], k, is_coreset)
         one_seg_res.append((partition_set, int(i)))
         i += m
         j += m
@@ -132,7 +131,7 @@ def bicriteria2(points, k, is_coreset=False):
         for j in range(m):
             rows_to_delete.append(one_seg_res[i][1] + j)
     points = np.delete(points, rows_to_delete, axis=0)
-    return cost + bicriteria2(points, k, is_coreset)
+    return cost + bicriteria2(points, k, f, mul, is_coreset)
 
 
 def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
