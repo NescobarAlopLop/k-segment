@@ -49,17 +49,7 @@ Temporary Items
 *.pyc
 *.pyperf
 *.pyproj
-*.pyproj
 *.suo
-k-segment.pyproj
-*.pyproj
-k-segment.pyproj
-*.pyproj
 
-.spark_coreset-master/run_k_segment/*
 .idea/*
-spark_coreset-master/.idea/misc.xml
-spark_coreset-master/.idea/modules.xml
-spark_coreset-master/.idea/spark_coreset-master.iml
-*.xml
-/spark_coreset-master/k_segment_coreset/main.pdf
+/k_segment_coreset/main.pdf

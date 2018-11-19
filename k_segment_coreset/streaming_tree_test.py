@@ -1,9 +1,14 @@
-"""
-Online coresets.
-"""
-
-from collections import namedtuple
 import numpy as np
+import utils
+import ksegment
+import CoresetKSeg
+import unittest
+import matplotlib.pyplot as plt
+import pandas as pd
+from utils import gen_synthetic_graph
+from collections import namedtuple
+
+
 from stack import Stack
 
 StackItem = namedtuple("StackItem", "coreset level")
@@ -69,3 +74,26 @@ class Stream(object):
             else:
                 solution = self._merge(solution, coreset)
         return solution.points, solution.weights
+
+
+k = 4
+n = 20
+chunk = 5
+
+
+def batch(iterable_data, chunk_size=1):
+    l = len(iterable_data)
+    for ndx in range(0, l, chunk_size):
+        yield iterable_data[ndx:min(ndx + chunk, l)]
+
+
+def gen_synthetic_graph(n, k):
+    return np.arange(n)
+
+
+stream = Stream(CoresetKSeg, leaf_size=chunk - 3, coreset_size=200, k=8)
+for x in batch(gen_synthetic_graph(n, k), chunk):
+    print(len(x))
+    stream.add_points(x)
+
+# TODO: add_points slices into parts with Nones

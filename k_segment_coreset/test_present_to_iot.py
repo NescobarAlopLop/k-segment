@@ -19,7 +19,6 @@ class KSegmentTest(unittest.TestCase):
     @staticmethod
     def test_from_file(path=None, n=None, b=0, k=3, eps=0.2, show=False):
         """
-
         :param path:    str path to file
         :param n:       int number of point to take starting at b
         :param b:       int take points starting from line b
@@ -42,15 +41,18 @@ class KSegmentTest(unittest.TestCase):
             n = len(data)
         print("using points {} to {}".format(b, b+n))
         data = data[b:n, :]
+
         p = np.column_stack((np.arange(1, len(data) + 1), data[:]))
+
         coreset = CoresetKSeg.build_coreset(p, k, eps)
         dividers = ksegment.coreset_k_segment(coreset, k)
+
         # pass data input as 2d, first col is time, 2nd is average on all data cols
         p = np.column_stack((p[:, 0], np.linalg.norm(p[:, 1:], axis=1)))
 
         visualize_2d(p, dividers, len(coreset), show=show)
 
-    def test_KO(self):
+    def test_KO_stock(self):
         """
         run k-segmentation coreset on CocaCola stock price
         """

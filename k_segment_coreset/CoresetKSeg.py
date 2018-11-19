@@ -3,7 +3,7 @@ from operator import is_
 import numpy as np
 import math
 import utils
-
+import ksegment
 
 class OneSegCoreset:
     def __init__(self, repPoints, weight, SVt):
@@ -12,7 +12,7 @@ class OneSegCoreset:
         self.SVt = SVt
 
 
-class Coreset:
+class SegmentCoreset:
     def __init__(self, coreset, g, b, e):
         self.C = coreset  # 1-segment coreset
         self.g = g  # best line
@@ -21,6 +21,18 @@ class Coreset:
 
     def __repr__(self):
         return "OneSegmentCoreset " + str(self.b) + "-" + str(self.e) + "\n" + str(self.C.repPoints) + "\n"
+
+
+class CoresetKSeg(object):
+    def __init__(self, data_points, k, eps):
+        self.p = np.column_stack((np.arange(1, len(data_points) + 1), data_points[:]))
+        self.k = k
+        self.eps = eps
+        self.coreset = build_coreset(data_points, k, eps)
+        self.dividers = ksegment.coreset_k_segment(self.coreset, k)
+
+    def __len__(self):
+        return len(self.coreset)
 
 
 # def bicriteria(points, k, is_coreset=False):
@@ -158,7 +170,7 @@ def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
             else:
                 b = T[0][0]     # signal index of first item in T
                 e = T[-1][0]    # signal index of last item in T
-            D.append(Coreset(C, g, b, e))
+            D.append(SegmentCoreset(C, g, b, e))
             Q = [Q[-1]]
     return D
 

@@ -93,7 +93,7 @@ class KMean(object):
         # _P[self.k - 1, n - 1] = np.argmin(_F[self.k - 1 - 1:self.k - 1, self.k - 1:n - 1]['weight'] + d[self.k - 1:n - 1, n - 1:n]['weight'].flatten())
         # cp.disable()
         # in total profiling: numpy way: 22525 function calls in 0.024 seconds; 112494 function calls in 0.125 seconds
-        #                     for loop way: 25568 function calls in 0.006 seconds; 239538 function calls in 0.057 seconds
+        #                    for loop way: 25568 function calls in 0.006 seconds; 239538 function calls in 0.057 seconds
         return _F[self.k - 1 - 1, _P[self.k - 1, n - 1]]['weight'] + d[_P[self.k - 1, n - 1], n - 1]['weight'], \
                self.compute_path(_P, n)
 
