@@ -1,7 +1,7 @@
 import numpy as np
 import utils
 import ksegment
-import Coreset
+import CoresetKSeg
 import unittest
 import matplotlib.pyplot as plt
 # import cProfile
@@ -54,7 +54,7 @@ class KSegmentTest(unittest.TestCase):
         data = gen_synthetic_graph(n, k, 1)[:, 1:]
         p = np.c_[np.mgrid[1:len(data) + 1], data]
 
-        coreset = Coreset.build_coreset(p, k, epsilon)
+        coreset = CoresetKSeg.build_coreset(p, k, epsilon)
         dividers = ksegment.coreset_k_segment(coreset, k)
         utils.visualize_2d(p, dividers, len(coreset),
                            show=False
@@ -76,7 +76,24 @@ class KSegmentTest(unittest.TestCase):
         p = np.c_[np.mgrid[1:data.shape[0] + 1], data]
         print("test input data\n{}".format(p))
 
-        b = Coreset.bicriteria(data, k)
-        b2 = Coreset.bicriteria2(data, k)
+        b = CoresetKSeg.bicriteria(data, k)
+        b2 = CoresetKSeg.bicriteria2(data, k)
+
+        print(b, b2)
+
+    def test_bicriteria_small_test_case(self):
+        dim = 1
+        data = np.asarray([10, 10, 10, 11, 10, 11, 10, 14,
+                           10, 10, 10, 12, 10, 15, 10, 12,
+                           10, 13, 10, 16, 10, 10, 10, 13])
+        n = len(data)
+        k = 2
+        p = np.c_[np.mgrid[1:n + 1], data]
+
+        f = [None] * n
+        b = CoresetKSeg.bicriteria(p, k, f, mul=3)
+        print(f)
+        b2 = CoresetKSeg.bicriteria2(p, k, f, mul=3)
+        print(f)
 
         print(b, b2)
