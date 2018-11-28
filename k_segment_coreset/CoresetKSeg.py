@@ -1,9 +1,8 @@
-from operator import is_
-
 import numpy as np
 import math
 import utils
 import ksegment
+
 
 class OneSegCoreset:
     def __init__(self, repPoints, weight, SVt):
@@ -65,49 +64,51 @@ class CoresetKSeg(object):
 #         print c
 #     return res + c
 
-def bicriteria(points, k, f=[], mul=4, is_coreset=False):
+
+def bicriteria(points, k, f, mul=4, is_coreset=False):
     """
     :param points:      input dataset of points
     :param k:           number of segments
     :param is_coreset:
+    :param f: float array
+    :param mul: int
     :return:            cost c a
     """
-    if len(points) <= (mul * k + 1):
-        return 0 # TODO changes
-    m = int(math.floor(len(points) / (mul * k)))
-    i = 0
-    j = m
-    # one_seg_res will  hold segment starting index and result (squred distance sum)
+    if len(points) < (mul * k + 1):
+        # for p in points:
+        #     f[p[0]] = 0
+        return 0  # TODO changes
+    chunk_size = int(math.floor(len(points) / (mul * k)))
+    # one_seg_res will  hold segment starting index and result (squared distance sum)
     one_seg_res = []
     # partition to mul*k segments and call 1-segment for each
-    while i < len(points):
-        partition_set = one_seg_cost(points[i:j], is_coreset)
-        one_seg_res.append((partition_set, int(i)))
-        i += m
-        j += m
-    # sort result
-    one_seg_res = sorted(one_seg_res, key=lambda res: res[0])
+    for start_idx in range(0, len(points), chunk_size):
+        partition_set = one_seg_cost(points[start_idx:start_idx+chunk_size], is_coreset)
+        one_seg_res.append((partition_set, start_idx, int(points[start_idx][0])))
+    # TODO: switch to max heap and test performance
+    one_seg_res = sorted(one_seg_res, key=lambda one_res: one_res[0])
     # res = the distances of the min k+1 segments
-    res = 0
+    cost = 0
     # sum distances of k+1 min segments and make a list of points to delete from P to get P \ Q from the algo'
     rows_to_delete = []
-    for i in range(k + 1):
-        res += one_seg_res[i][0]
-        for j in range(m):
-            rows_to_delete.append(one_seg_res[i][1] + j)
+    for start_idx in range(k + 1):
+        cost += one_seg_res[start_idx][0]
+        f[one_seg_res[start_idx][2]:one_seg_res[start_idx][2]+chunk_size] = [round(one_seg_res[start_idx][0], 2)] * chunk_size
+        rows_to_delete += range(one_seg_res[start_idx][1], one_seg_res[start_idx][1] + chunk_size)
     points = np.delete(points, rows_to_delete, axis=0)
-    return res + bicriteria(points, k, f, mul, is_coreset)
+    return cost + bicriteria(points, k, f, mul, is_coreset)
 
 
 def bicriteria2(points, k, f, mul=4, is_coreset=False):
     """
     :param points:      input dataset of points
     :param k:           number of segments
+    :param mul: int
     :param is_coreset:
     :return:            cost c a
     """
     if len(points) <= (mul * k + 1):
-        return 0 # TODO changes
+        return 0
     m = int(math.floor(len(points) / (mul * k)))
     i = 0
     j = m
@@ -175,8 +176,12 @@ def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
 
 
 def build_coreset(points, k, eps, is_coreset=False):
-    h = bicriteria(points, k, is_coreset)
+    f = [float] * (len(points) + 1)
+
+    h = bicriteria(points, k, f, is_coreset=is_coreset)
+    print(f)
     print("bicritiria estimate:", h)
+
     b = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
     return BalancedPartition(points, eps, b, is_coreset)
 
@@ -184,9 +189,9 @@ def build_coreset(points, k, eps, is_coreset=False):
 def one_seg_cost(points, is_coreset=False):
     if is_coreset:
         one_segment_coreset = OneSegmentCorset(points, is_coreset)
-        return utils.best_fit_line_cost(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
+        return utils.cost_best_fit_line_to_points(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
     else:
-        return utils.best_fit_line_cost(points, is_coreset)
+        return utils.cost_best_fit_line_to_points(points, is_coreset)
 
 
 def OneSegmentCorset(P, is_coreset=False):

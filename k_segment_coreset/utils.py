@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 
-def best_fit_line_cost(points, is_coreset=False):
+def cost_best_fit_line_to_points(points, is_coreset=False):
     best_fit_line = calc_best_fit_line_polyfit(points, is_coreset)
     return sqrd_dist_sum(points, best_fit_line)
 
