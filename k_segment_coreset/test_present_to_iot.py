@@ -19,12 +19,18 @@ class KSegmentTest(unittest.TestCase):
     @staticmethod
     def test_from_file(path=None, n=None, b=0, k=3, eps=0.2, show=False):
         """
-        :param path:    str path to file
-        :param n:       int number of point to take starting at b
-        :param b:       int take points starting from line b
-        :param k:       int number of segments
-        :param eps:     float epsilon error
-        :param show:    bool show plots
+        :param path:    path to file
+        :type path:     str
+        :param n:       number of point to take starting at b
+        :type n:        int
+        :param b:       take points starting from line b
+        :type b:        int
+        :param k:       number of segments
+        :type k:        int
+        :param eps:     epsilon error
+        :type eps:      float
+        :param show:    show plots
+        :type show:     bool
         :return:
         """
         if not path:
