@@ -119,9 +119,12 @@ def visualize_3d(points, dividers):
     plt.show()
 
 
-def visualize_2d(points, dividers, coreset_size, show=False):
+# def visualize_2d(points, dividers, coreset_size, coreset_points, show=False):
+def visualize_2d(points, coreset, k, eps, show=False):
+    import ksegment
     line_pts_list = []
     all_sgmnt_sqrd_dist_sum = 0
+    dividers = ksegment.coreset_k_segment(coreset, k)
     for i in range(len(dividers) - 1):
         line_start_arr_index = dividers[i] - 1
         line_end_arr_index = dividers[i + 1] - 1 if i != len(dividers) - 2 else dividers[i + 1]
@@ -131,14 +134,23 @@ def visualize_2d(points, dividers, coreset_size, show=False):
                               pt_on_line(dividers[i + 1] - (1 if i != len(dividers) - 2 else 0), best_fit_line)])
         all_sgmnt_sqrd_dist_sum += sqrd_dist_sum(segment, best_fit_line)
 
+    plt.figure(figsize=(19, 9))
     plt.scatter(points[:, 0], points[:, 1], s=3)
+    coreset_points = ksegment.get_coreset_points(coreset)
+    plt.scatter(coreset_points[:, 0], coreset_points[:, 1], s=20, c='r')
+    # i = 0
+    # for c in coreset:
+    #     line_pts_array = np.asarray(c.g)
+    #     plt.plot(c.g, label='[{}] b = {}, e = {}'.format(i, c.b, c.e))
+    #     # plt.plot(*line_pts_array.T, label='[{}] b = {}, e = {}'.format(i, c.b, c.e))
+    #     i += 1
     i = 0
     for line in line_pts_list:
         lint_pts_arr = np.asarray(line)
         plt.plot(*lint_pts_arr.T, label=str(i))
         i += 1
-    plt.suptitle('data size {}, coreset size {}, k = {}, mse for all points = {}'
-                 .format(len(points), coreset_size, len(line_pts_list), all_sgmnt_sqrd_dist_sum))
+    plt.suptitle('data size {}, coreset size {}, k = {}, error = {}% mse for all points = {:.3f}'
+                 .format(len(points), len(coreset_points), len(line_pts_list), eps * 100, all_sgmnt_sqrd_dist_sum))
     plt.legend()
     print("saving image: {:%Y_%m_%d_%s}.png".format(datetime.now()))
     plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))

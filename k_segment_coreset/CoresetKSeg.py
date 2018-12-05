@@ -33,6 +33,9 @@ class CoresetKSeg(object):
     def __len__(self):
         return len(self.coreset)
 
+    def get_points(self):
+        return [1,3,4,53,322,2,43]
+
 
 # def bicriteria(points, k, is_coreset=False):
 #     if len(points) <= (4 * k + 1):
@@ -99,7 +102,7 @@ def bicriteria(points, k, f, mul=4, is_coreset=False):
     return cost + bicriteria(points, k, f, mul, is_coreset)
 
 
-def bicriteria2(points, k, f, mul=4, is_coreset=False):
+def bicriteria2(points, k, mul=4, is_coreset=False):
     """
     :param points:      input dataset of points
     :param k:           number of segments
@@ -132,7 +135,7 @@ def bicriteria2(points, k, f, mul=4, is_coreset=False):
         for j in range(m):
             rows_to_delete.append(one_seg_res[i][1] + j)
     points = np.delete(points, rows_to_delete, axis=0)
-    return cost + bicriteria2(points, k, f, mul, is_coreset)
+    return cost + bicriteria2(points, k, mul, is_coreset)
 
 
 def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
@@ -179,11 +182,10 @@ def build_coreset(points, k, eps, is_coreset=False):
     f = [float] * (len(points) + 1)
 
     h = bicriteria(points, k, f, is_coreset=is_coreset)
-    print(f)
     print("bicritiria estimate:", h)
 
-    b = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
-    return BalancedPartition(points, eps, b, is_coreset)
+    sigma = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
+    return BalancedPartition(points, eps, sigma, is_coreset)
 
 
 def one_seg_cost(points, is_coreset=False):

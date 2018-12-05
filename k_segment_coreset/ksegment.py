@@ -135,6 +135,15 @@ def coreset_k_segment(D, k):
     return dividers
 
 
+def get_coreset_points(coreset):
+    pass
+    rv = []
+    for c in coreset:
+        for rp in c.C.repPoints:
+            rv.append(rp)
+    return np.asarray(rv)
+
+
 def coreset_k_segment_fast_segmentation(D, k, eps):
     pw = np.empty((0, 4))
     for coreset in D:
