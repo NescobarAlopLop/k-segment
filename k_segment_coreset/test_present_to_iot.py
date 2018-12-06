@@ -109,9 +109,9 @@ class KSegmentTest(unittest.TestCase):
         """
         n = 110
         dim = 1
-        one = 100 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/250
-        two = 200 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/250
-        three = 300 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/150
+        one = 10 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/250
+        two = 20 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/250
+        three = 30 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/150
         arr = np.row_stack((one, two, three))
         p = np.column_stack((np.arange(1, len(arr) + 1), arr[:]))
 
