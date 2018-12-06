@@ -1,11 +1,5 @@
 import numpy as np
-import utils
-import ksegment
 import CoresetKSeg
-import unittest
-import matplotlib.pyplot as plt
-import pandas as pd
-from utils import gen_synthetic_graph
 from collections import namedtuple
 
 
@@ -17,19 +11,19 @@ WeightedPointSet = namedtuple("WeightedPointSet", "points weights")
 
 class Stream(object):
 
-    def __init__(self, coreset_alg, leaf_size, coreset_size, k):
+    def __init__(self, coreset_alg, leaf_size, eps, k):
         self.coreset_alg = coreset_alg
         self.leaf_size = leaf_size
         self.last_leaf = []
-        self.coreset_size = coreset_size
+        self.eps = eps
         self.stack = Stack()
         self.k = k
 
     def _merge(self, pset1, pset2):
         points = np.vstack([pset1.points, pset2.points])
         weights = np.hstack([pset1.weights, pset2.weights])
-        cset = self.coreset_alg(points, self.k, weights)
-        coreset, weights = cset.compute(self.coreset_size)
+        cset = self.coreset_alg(k=self.k, eps=self.eps, weights=weights)
+        coreset, weights = cset.compute(data_points=points)
         return WeightedPointSet(coreset, weights)
 
     def _add_leaf(self, points, weights):
@@ -63,7 +57,9 @@ class Stream(object):
         """
 
         for split in np.array_split(points, self.leaf_size):
-                self._add_leaf(split, None)
+            self._add_leaf(split, None)
+        # for i in range(len(points)):
+        #     s
 
     def get_unified_coreset(self):
         solution = None
@@ -76,24 +72,28 @@ class Stream(object):
         return solution.points, solution.weights
 
 
-k = 4
-n = 20
-chunk = 5
-
-
 def batch(iterable_data, chunk_size=1):
     l = len(iterable_data)
     for ndx in range(0, l, chunk_size):
-        yield iterable_data[ndx:min(ndx + chunk, l)]
+        yield iterable_data[ndx:min(ndx + chunk_size, l)]
 
 
 def gen_synthetic_graph(n, k):
     return np.arange(n)
 
 
-stream = Stream(CoresetKSeg, leaf_size=chunk - 3, coreset_size=200, k=8)
-for x in batch(gen_synthetic_graph(n, k), chunk):
-    print(len(x))
-    stream.add_points(x)
+def main():
+    k = 4
+    n = 50
+    chunk = 3
+    # stream = Stream(CoresetKSeg, leaf_size=chunk - 3, coreset_size=200, k=8)
+    stream = Stream(CoresetKSeg.CoresetKSeg, leaf_size=chunk, eps=0.2, k=8)
+    for x in batch(gen_synthetic_graph(n, k), chunk):
+        print(len(x))
+        stream.add_points(x)
 
 # TODO: add_points slices into parts with Nones
+
+
+if __name__ == '__main__':
+    main()
