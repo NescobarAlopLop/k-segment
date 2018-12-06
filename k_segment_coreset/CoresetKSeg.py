@@ -23,19 +23,24 @@ class SegmentCoreset:
 
 
 class CoresetKSeg(object):
-    def __init__(self, data_points, k, eps):
-        self.p = np.column_stack((np.arange(1, len(data_points) + 1), data_points[:]))
+    def __init__(self, k, eps, weights=None):
         self.k = k
         self.eps = eps
-        self.coreset = build_coreset(data_points, k, eps)
-        self.dividers = ksegment.coreset_k_segment(self.coreset, k)
+        self.coreset = None
+        self.dividers = None
+        self.iscoreset = False
+        if weights is not None:
+            self.iscoreset = True
+            self.weights = weights
 
     def __len__(self):
         return len(self.coreset)
 
-    def get_points(self):
-        return [1,3,4,53,322,2,43]
-
+    def compute(self, data_points):
+        data_points = np.column_stack((np.arange(1, len(data_points) + 1), data_points[:]))
+        self.coreset = build_coreset(data_points, self.k, self.eps)
+        self.dividers = ksegment.coreset_k_segment(self.coreset, self.k)
+        return self.coreset, self.weights
 
 # def bicriteria(points, k, is_coreset=False):
 #     if len(points) <= (4 * k + 1):
