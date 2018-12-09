@@ -1,5 +1,5 @@
 import numpy as np
-from utils import load_csv_file, visualize_2d, gen_synthetic_graph, calc_cost_dividers
+from utils_seg import load_csv_file, visualize_2d, gen_synthetic_graph, calc_cost_dividers
 import ksegment
 import CoresetKSeg
 import unittest

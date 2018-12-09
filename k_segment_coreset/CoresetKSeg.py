@@ -1,6 +1,6 @@
 import numpy as np
 import math
-import utils
+import utils_seg
 import ksegment
 
 
@@ -171,7 +171,7 @@ def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
                 continue
             T = Q[:-1]
             C = OneSegmentCorset(T, is_coreset)
-            g = utils.calc_best_fit_line_polyfit(OneSegmentCorset(np.asarray(T), is_coreset).repPoints)
+            g = utils_seg.calc_best_fit_line_polyfit(OneSegmentCorset(np.asarray(T), is_coreset).repPoints)
             if is_coreset:
                 b = T[0].b
                 e = T[-1].e
@@ -196,9 +196,9 @@ def build_coreset(points, k, eps, is_coreset=False):
 def one_seg_cost(points, is_coreset=False):
     if is_coreset:
         one_segment_coreset = OneSegmentCorset(points, is_coreset)
-        return utils.cost_best_fit_line_to_points(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
+        return utils_seg.cost_best_fit_line_to_points(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
     else:
-        return utils.cost_best_fit_line_to_points(points, is_coreset)
+        return utils_seg.cost_best_fit_line_to_points(points, is_coreset)
 
 
 def OneSegmentCorset(P, is_coreset=False):

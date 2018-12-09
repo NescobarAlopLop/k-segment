@@ -1,7 +1,6 @@
 import numpy as np
-import utils
+import utils_seg
 import CoresetKSeg
-import warnings
 
 
 class NodesInfo:
@@ -65,8 +64,8 @@ def calc_prep_dist(P):
     for index, value in np.ndenumerate(prep_dist):
         if index[0] < index[1]:
             segment = P[index[0]:index[1]+1, :]
-            best_fit_line = utils.calc_best_fit_line_polyfit(segment)
-            prep_dist[index] = utils.sqrd_dist_sum(segment, best_fit_line)
+            best_fit_line = utils_seg.calc_best_fit_line_polyfit(segment)
+            prep_dist[index] = utils_seg.sqrd_dist_sum(segment, best_fit_line)
     return prep_dist
 
 
@@ -105,8 +104,8 @@ def calc_coreset_prep_dist(D):
             for coreset in D[first_coreset:second_coreset+1]:
                 C.append(coreset)
             coreset_of_coresets = CoresetKSeg.OneSegmentCorset(C, True)
-            best_fit_line = utils.calc_best_fit_line_polyfit(coreset_of_coresets.repPoints, True)
-            fitting_cost = utils.sqrd_dist_sum(coreset_of_coresets.repPoints, best_fit_line)*coreset_of_coresets.weight
+            best_fit_line = utils_seg.calc_best_fit_line_polyfit(coreset_of_coresets.repPoints, True)
+            fitting_cost = utils_seg.sqrd_dist_sum(coreset_of_coresets.repPoints, best_fit_line)*coreset_of_coresets.weight
             prep_dist[first_coreset, second_coreset] = fitting_cost
     return prep_dist
 
@@ -120,8 +119,8 @@ def calc_weighted_prep_dist(pw):
                 continue
             segment = pw[index[0]:index[1]+1, :3]
             weights = pw[index[0]:index[1]+1, 3:].flatten()
-            best_fit_line = utils.calc_best_fit_line_polyfit(segment, weights)
-            prep_dist[index] = utils.sqrd_dist_sum_weighted(segment, best_fit_line, w=weights)
+            best_fit_line = utils_seg.calc_best_fit_line_polyfit(segment, weights)
+            prep_dist[index] = utils_seg.sqrd_dist_sum_weighted(segment, best_fit_line, w=weights)
     return prep_dist
 
 
@@ -147,7 +146,7 @@ def get_coreset_points(coreset):
 def coreset_k_segment_fast_segmentation(D, k, eps):
     pw = np.empty((0, 4))
     for coreset in D:
-        pts = utils.pt_on_line(range(int(coreset.b), int(coreset.e) + 1), coreset.g)
+        pts = utils_seg.pt_on_line(range(int(coreset.b), int(coreset.e) + 1), coreset.g)
         w = CoresetKSeg.PiecewiseCoreset(len(pts[0]), eps)
         p_coreset = np.column_stack((pts[0], pts[1], pts[2], w))
         p_coreset_filtered = p_coreset[p_coreset[:, 3] > 0]

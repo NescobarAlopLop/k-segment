@@ -1,5 +1,5 @@
 import numpy as np
-import utils
+import utils_seg
 import ksegment
 import CoresetKSeg
 import unittest
@@ -25,7 +25,7 @@ class KSegmentTest(unittest.TestCase):
 
         coreset = CoresetKSeg.build_coreset(p, k, epsilon)
         dividers = ksegment.coreset_k_segment(coreset, k)
-        utils.visualize_3d(p, dividers)     # Uncomment to see results
+        utils_seg.visualize_3d(p, dividers)     # Uncomment to see results
 
     def test_fast_segmentation(self):
         # generate points
@@ -40,7 +40,7 @@ class KSegmentTest(unittest.TestCase):
         print(core)
         dividers = ksegment.coreset_k_segment_fast_segmentation(core, k, epsilon)
         print("dividers", dividers)
-        print("dividers-cost:", utils.calc_cost_dividers(p, dividers))
+        print("dividers-cost:", utils_seg.calc_cost_dividers(p, dividers))
         # utils.visualize_3d(p, dividers) # Uncomment to see resultss
 
     def test_coreset_merging(self):
@@ -68,7 +68,7 @@ class KSegmentTest(unittest.TestCase):
         bicritiria_cost = CoresetKSeg.bicriteria(p, k, f)
         bicritiria_cost2 = CoresetKSeg.bicriteria2(p, k)
         print("Bicritiria estimate: ", bicritiria_cost, bicritiria_cost2)
-        real_cost = utils.calc_cost_dividers(p, ksegment.k_segment(p, k))
+        real_cost = utils_seg.calc_cost_dividers(p, ksegment.k_segment(p, k))
         print("real cost: ", real_cost)
         self.assertGreaterEqual(real_cost, bicritiria_cost)
 
@@ -82,7 +82,7 @@ class KSegmentTest(unittest.TestCase):
         bicritiria_cost = CoresetKSeg.bicriteria(p, k, f)
         bicritiria_cost2 = CoresetKSeg.bicriteria2(p, k)
         print("Bicritiria estimate: ", bicritiria_cost, bicritiria_cost2)
-        real_cost = utils.calc_cost_dividers(p, ksegment.k_segment(p, k))
+        real_cost = utils_seg.calc_cost_dividers(p, ksegment.k_segment(p, k))
         print("real cost: ", real_cost)
         self.assertGreaterEqual(real_cost, bicritiria_cost)
 
@@ -131,17 +131,17 @@ class KSegmentTest(unittest.TestCase):
         points1 = points[:1000]
         core1 = CoresetKSeg.OneSegmentCorset(points1)
 
-        best_fit_line_points = utils.calc_best_fit_line(points)
-        best_fit_line_points1 = utils.calc_best_fit_line(points1)
-        best_fit_line_core1 = utils.calc_best_fit_line(core1.repPoints)
+        best_fit_line_points = utils_seg.calc_best_fit_line(points)
+        best_fit_line_points1 = utils_seg.calc_best_fit_line(points1)
+        best_fit_line_core1 = utils_seg.calc_best_fit_line(core1.repPoints)
 
         self.assertEqual(best_fit_line_points1.all(), best_fit_line_core1.all())
 
-        original_cost_not_best_fit_line = utils.sqrd_dist_sum(points1, best_fit_line_points)
-        original_cost_best_fit_line = utils.sqrd_dist_sum(points1, best_fit_line_points1)
+        original_cost_not_best_fit_line = utils_seg.sqrd_dist_sum(points1, best_fit_line_points)
+        original_cost_best_fit_line = utils_seg.sqrd_dist_sum(points1, best_fit_line_points1)
         single_coreset_cost_not_best_fit_line =\
-            utils.sqrd_dist_sum(core1.repPoints, best_fit_line_points) * core1.weight
-        single_coreset_cost_best_fit_line = utils.sqrd_dist_sum(core1.repPoints, best_fit_line_core1) * core1.weight
+            utils_seg.sqrd_dist_sum(core1.repPoints, best_fit_line_points) * core1.weight
+        single_coreset_cost_best_fit_line = utils_seg.sqrd_dist_sum(core1.repPoints, best_fit_line_core1) * core1.weight
 
         self.assertEqual(int(original_cost_best_fit_line), int(single_coreset_cost_best_fit_line))
         self.assertEqual(int(original_cost_not_best_fit_line), int(single_coreset_cost_not_best_fit_line))
@@ -182,7 +182,7 @@ class KSegmentTest(unittest.TestCase):
                          [2, 3.4707861, -3.28776192],
                          [3, 3.67879099, -3.43908923]])
         w = [1.0, 1.0, 1.0]
-        best_fit_line = utils.calc_best_fit_line_polyfit(data, w)
+        best_fit_line = utils_seg.calc_best_fit_line_polyfit(data, w)
         print(best_fit_line)
 
     def test_calc_sqr_dist_weighted(self):
@@ -191,7 +191,7 @@ class KSegmentTest(unittest.TestCase):
                          [3, 4],
                          [4, 4]])
         w = [1, 0, 0, 1]
-        best_fit_line_cost_weighted = utils.best_fit_line_cost_weighted(data, w)
+        best_fit_line_cost_weighted = utils_seg.best_fit_line_cost_weighted(data, w)
         print(best_fit_line_cost_weighted)
 
     def test_Piecewise_coreset(self):
