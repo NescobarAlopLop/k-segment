@@ -68,7 +68,7 @@ def sqrd_dist_sum_weighted(points, line, w):
         squared_norm_distances = np.square(norm_vector)
         return sum(squared_norm_distances * (w ** 2))
     except Exception as e:
-        print("error in sqrd_dist_sum: {}".format(e))
+        print("error in sqrd_dist_sum_weighted: {}".format(e))
 
 
 def pt_on_line(x, line):
