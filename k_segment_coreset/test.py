@@ -1,7 +1,7 @@
 import numpy as np
 import utils
 import ksegment
-import Coreset
+import CoresetKSeg
 import unittest
 # import cProfile
 
@@ -23,7 +23,7 @@ class KSegmentTest(unittest.TestCase):
         data = np.genfromtxt("input.csv", delimiter=" ")
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        coreset = Coreset.build_coreset(p, k, epsilon)
+        coreset = CoresetKSeg.build_coreset(p, k, epsilon)
         dividers = ksegment.coreset_k_segment(coreset, k)
         utils.visualize_3d(p, dividers)     # Uncomment to see results
 
@@ -36,7 +36,7 @@ class KSegmentTest(unittest.TestCase):
         data = np.genfromtxt("input.csv", delimiter=" ")
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        core = Coreset.build_coreset(p, k, epsilon)
+        core = CoresetKSeg.build_coreset(p, k, epsilon)
         print(core)
         dividers = ksegment.coreset_k_segment_fast_segmentation(core, k, epsilon)
         print("dividers", dividers)
@@ -52,20 +52,21 @@ class KSegmentTest(unittest.TestCase):
         data = np.genfromtxt("input.csv", delimiter=" ")
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        coreset = Coreset.build_coreset(p, k, epsilon)
-        coreset_of_coreset = Coreset.build_coreset(coreset, k, epsilon, is_coreset=True)
+        coreset = CoresetKSeg.build_coreset(p, k, epsilon)
+        coreset_of_coreset = CoresetKSeg.build_coreset(coreset, k, epsilon, is_coreset=True)
         dividers = ksegment.coreset_k_segment(coreset_of_coreset, k)
         # utils.visualize_3d(p, dividers) # Uncomment to see resultss
 
     def test_bicritiria(self):
         n = 300
         k = 4
+        f = []
         data = example1(n)
 
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        bicritiria_cost = Coreset.bicriteria(p, k)
-        bicritiria_cost2 = Coreset.bicriteria2(p, k)
+        bicritiria_cost = CoresetKSeg.bicriteria(p, k, f)
+        bicritiria_cost2 = CoresetKSeg.bicriteria2(p, k)
         print("Bicritiria estimate: ", bicritiria_cost, bicritiria_cost2)
         real_cost = utils.calc_cost_dividers(p, ksegment.k_segment(p, k))
         print("real cost: ", real_cost)
@@ -107,12 +108,13 @@ class KSegmentTest(unittest.TestCase):
 
     def test_OneSegmentCoreset_Cost(self):
         # generate points
-        n = 1200
+        n = 400
         data = example1(n)
+        data = example3(n)
 
-        points = np.c_[np.mgrid[1:n + 1], data]
+        points = np.column_stack((np.arange(1, len(data) + 1), data[:]))
         points1 = points[:1000]
-        core1 = Coreset.OneSegmentCorset(points1)
+        core1 = CoresetKSeg.OneSegmentCorset(points1)
 
         best_fit_line_points = utils.calc_best_fit_line(points)
         best_fit_line_points1 = utils.calc_best_fit_line(points1)
@@ -179,7 +181,7 @@ class KSegmentTest(unittest.TestCase):
 
     def test_Piecewise_coreset(self):
         n = 600
-        w = Coreset.PiecewiseCoreset(n, 0.01)
+        w = CoresetKSeg.PiecewiseCoreset(n, 0.01)
         self.assertAlmostEqual(n, sum(w), delta=n/100)
 
 
