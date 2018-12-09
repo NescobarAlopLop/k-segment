@@ -1,5 +1,5 @@
 import numpy as np
-from utils import load_csv_file, visualize_2d, gen_synthetic_graph
+from utils import load_csv_file, visualize_2d, gen_synthetic_graph, calc_cost_dividers
 import ksegment
 import CoresetKSeg
 import unittest
@@ -109,14 +109,20 @@ class KSegmentTest(unittest.TestCase):
         """
         n = 110
         dim = 1
-        one = 10 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/250
-        two = 20 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/250
-        three = 30 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1))/150
-        arr = np.row_stack((one, two, three))
-        p = np.column_stack((np.arange(1, len(arr) + 1), arr[:]))
+        from test import example4
+        p = example4(n)
 
         k = 3
-        eps = 0.4
+        eps = 0.8
+        f = []
+        bicritiria_cost = CoresetKSeg.bicriteria(p, k, f)
+        bicritiria_cost2 = CoresetKSeg.bicriteria2(p, k)
+        print("Bicritiria estimate: ", bicritiria_cost, bicritiria_cost2)
+        real_cost = calc_cost_dividers(p, ksegment.k_segment(p, k))
+        print("real cost: ", real_cost)
+        self.assertGreaterEqual(real_cost, bicritiria_cost)
+
+
         coreset = CoresetKSeg.build_coreset(p, k, eps)
         dividers = ksegment.coreset_k_segment(coreset, k)
         coreset_points = ksegment.get_coreset_points(coreset)
