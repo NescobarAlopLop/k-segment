@@ -72,6 +72,21 @@ class KSegmentTest(unittest.TestCase):
         print("real cost: ", real_cost)
         self.assertGreaterEqual(real_cost, bicritiria_cost)
 
+    def test_bicritiria2(self):
+        n = 300
+        k = 3
+        f = []
+        data = example4(n)
+        p = np.column_stack((np.arange(1, len(data) + 1), data[:]))
+
+        bicritiria_cost = CoresetKSeg.bicriteria(p, k, f)
+        bicritiria_cost2 = CoresetKSeg.bicriteria2(p, k)
+        print("Bicritiria estimate: ", bicritiria_cost, bicritiria_cost2)
+        real_cost = utils.calc_cost_dividers(p, ksegment.k_segment(p, k))
+        print("real cost: ", real_cost)
+        self.assertGreaterEqual(real_cost, bicritiria_cost)
+
+
     # def test_best_fit_line_multiple_coresets(self):
     #     # generate points
     #     N = 1200
@@ -212,3 +227,17 @@ def example2():
     y1 = np.mgrid[-5:3:100j]
     x1 += np.random.normal(size=x1.shape) * 4
     return np.c_[x1, y1]
+
+
+def example3(n):
+    one = 10 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1)) / 4500
+    two = 20 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1)) / 4500
+    three = 30 * np.ones((n, 1)) - np.random.randn(n).reshape((n, 1)) / 5500
+    return np.row_stack((one, two, three))
+
+
+def example4(n):
+    one = 10 * np.ones((n, 1)) - random_data(n, 1)
+    two = 20 * np.ones((n, 1)) - random_data(n, 1)
+    three = 30 * np.ones((n, 1)) - random_data(n, 1)
+    return np.row_stack((one, two, three))
