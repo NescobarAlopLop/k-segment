@@ -111,7 +111,7 @@ class KSegmentTest(unittest.TestCase):
         dim = 1
         from test import example4
         p = example4(n)
-
+        p = np.column_stack((np.arange(1, len(p) + 1), p[:]))
         k = 3
         eps = 0.8
         f = []
