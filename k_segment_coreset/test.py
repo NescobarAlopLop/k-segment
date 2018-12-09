@@ -201,8 +201,7 @@ class KSegmentTest(unittest.TestCase):
 
 
 def random_data(n, dimension):
-    return np.random.random_integers(0, 100, (n, dimension))
-
+    return np.random.randint(0, 100, (n, dimension))
 
 # 3 straight lines with noise
 # choose N that divides by 6
