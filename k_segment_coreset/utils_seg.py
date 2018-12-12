@@ -172,15 +172,9 @@ def visualize_2d(points, coreset, k, eps, show=False):
     :return: void
     """
     plt.figure(figsize=(19, 9), dpi=200)
+    plt.scatter(points[:, 0], points[:, 1], s=3)
 
     import ksegment
-    dividers = ksegment.coreset_k_segment(coreset, k)
-    segments_lines = compute_lines_for_points_split_by_dividers(points, dividers)
-
-    for xc in dividers:
-        plt.axvline(x=xc, linestyle='--', label='divider at {}'.format(xc))
-
-    plt.scatter(points[:, 0], points[:, 1], s=3)
     coreset_points = ksegment.get_coreset_points(coreset)
     plt.scatter(coreset_points[:, 0], coreset_points[:, 1], s=30, c='r', alpha=0.3)
     # i = 0
@@ -190,6 +184,10 @@ def visualize_2d(points, coreset, k, eps, show=False):
     #     # plt.plot(*line_pts_array.T, label='[{}] b = {}, e = {}'.format(i, c.b, c.e))
     #     i += 1
 
+    dividers = ksegment.coreset_k_segment(coreset, k)
+    for xc in dividers:
+        plt.axvline(x=xc, linestyle='--', label='divider at {}'.format(xc))
+    segments_lines = compute_lines_for_points_split_by_dividers(points, dividers)
     for line, idx in zip(segments_lines, range(len(segments_lines))):
         lint_pts_arr = np.asarray(line)
         plt.plot(*lint_pts_arr.T, label=str(idx), alpha=0.5, linestyle='-', linewidth=3.0)
