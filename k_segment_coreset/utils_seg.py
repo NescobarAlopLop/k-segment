@@ -3,6 +3,13 @@ import mpl_toolkits.mplot3d as m3d
 import matplotlib.pyplot as plt
 from datetime import datetime
 import pandas as pd
+# import SparkContext
+# from pyspark import SparkConf, SparkContext
+# conf = (SparkConf()
+#          .setMaster("local")
+#          .setAppName("utils")
+#          .set("spark.executor.memory", "1g"))
+# sc = SparkContext(conf=conf)
 
 
 def cost_best_fit_line_to_points(points, is_coreset=False):
@@ -43,7 +50,7 @@ def calc_best_fit_line_polyfit(points, weight=False, is_coreset=False):
         data = points[:, 1:]
         return np.polyfit(time_array, data, 1, w=weight)
     except Exception as e:
-        print("error in calc_best_fit_line polyfit \nis coreset: {}\nerror: {}"
+        print("error in calc_best_fit_line_polyfit \nis coreset: {}\nerror: {}"
               .format(is_coreset.__str__(), e))
 
 
@@ -119,41 +126,62 @@ def visualize_3d(points, dividers):
     plt.show()
 
 
+def compute_lines_for_points_split_by_dividers(points, dividers):
+    lines = []
+    for i in range(len(dividers) - 1):
+        segment_begin = int(dividers[i] - 1)
+        segment_end = int(dividers[i + 1] - 1 if i != len(dividers) - 2 else dividers[i + 1])
+        segment_points = points[segment_begin:segment_end, :]
+
+        best_fit_line = calc_best_fit_line_polyfit(segment_points)
+
+        lines.append([pt_on_line(dividers[i], best_fit_line),
+                      pt_on_line(dividers[i + 1] - (1 if i != len(dividers) - 2 else 0), best_fit_line)])
+    return lines
+
+
+def compute_total_mse(points, dividers, lines):
+    mse = 0.0
+    for segment_begin, segment_end, line in zip(dividers[:-1], dividers[1:], lines):
+        segment = points[int(segment_begin):int(segment_end), :]
+        best_fit_line = calc_best_fit_line_polyfit(segment)
+        mse += sqrd_dist_sum(segment, best_fit_line)
+        print(segment_begin, segment_end, line)
+    return mse
+
+
 # def visualize_2d(points, dividers, coreset_size, coreset_points, show=False):
 def visualize_2d(points, coreset, k, eps, show=False):
-    import ksegment
-    line_pts_list = []
-    all_sgmnt_sqrd_dist_sum = 0
-    dividers = ksegment.coreset_k_segment(coreset, k)
-    for i in range(len(dividers) - 1):
-        line_start_arr_index = dividers[i] - 1
-        line_end_arr_index = dividers[i + 1] - 1 if i != len(dividers) - 2 else dividers[i + 1]
-        segment = points[int(line_start_arr_index):int(line_end_arr_index), :]
-        best_fit_line = calc_best_fit_line_polyfit(segment)
-        line_pts_list.append([pt_on_line(dividers[i], best_fit_line),
-                              pt_on_line(dividers[i + 1] - (1 if i != len(dividers) - 2 else 0), best_fit_line)])
-        all_sgmnt_sqrd_dist_sum += sqrd_dist_sum(segment, best_fit_line)
+    plt.figure(figsize=(19, 9), dpi=200)
 
-    plt.figure(figsize=(19, 9))
+    import ksegment
+    dividers = ksegment.coreset_k_segment(coreset, k)
+    segments_lines = compute_lines_for_points_split_by_dividers(points, dividers)
+
+    for xc in dividers:
+        plt.axvline(x=xc, linestyle='--', label='divider at {}'.format(xc))
+
     plt.scatter(points[:, 0], points[:, 1], s=3)
     coreset_points = ksegment.get_coreset_points(coreset)
-    plt.scatter(coreset_points[:, 0], coreset_points[:, 1], s=20, c='r')
+    plt.scatter(coreset_points[:, 0], coreset_points[:, 1], s=30, c='r', alpha=0.3)
     # i = 0
     # for c in coreset:
     #     line_pts_array = np.asarray(c.g)
     #     plt.plot(c.g, label='[{}] b = {}, e = {}'.format(i, c.b, c.e))
     #     # plt.plot(*line_pts_array.T, label='[{}] b = {}, e = {}'.format(i, c.b, c.e))
     #     i += 1
-    i = 0
-    for line in line_pts_list:
+
+    for line, idx in zip(segments_lines, range(len(segments_lines))):
         lint_pts_arr = np.asarray(line)
-        plt.plot(*lint_pts_arr.T, label=str(i))
-        i += 1
-    plt.suptitle('data size {}, coreset size {}, k = {}, error = {}% mse for all points = {:.3f}'
-                 .format(len(points), len(coreset_points), len(line_pts_list), eps * 100, all_sgmnt_sqrd_dist_sum))
+        plt.plot(*lint_pts_arr.T, label=str(idx), alpha=0.5, linestyle='-', linewidth=3.0)
+    total_mse = compute_total_mse(points, dividers, segments_lines)
+
+    plt.suptitle('data size {}, coreset size {}, k = {}, error = {:<.2f}% mse for all points = {:<.3f}'
+                 .format(len(points), len(coreset_points), len(segments_lines), eps * 100, total_mse))
     plt.legend()
-    print("saving image: {:%Y_%m_%d_%s}.png".format(datetime.now()))
     plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))
+    print("saving image: {:%Y_%m_%d_%s}.png".format(datetime.now()))
+    print("original data len\t{}\ncoreset points len:\t{}".format(len(points), len(coreset_points)))
     if show:
         plt.show()
     plt.clf()
