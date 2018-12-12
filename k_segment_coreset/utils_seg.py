@@ -127,6 +127,11 @@ def visualize_3d(points, dividers):
 
 
 def compute_lines_for_points_split_by_dividers(points, dividers):
+    """
+    :param points: input data points
+    :param dividers: indexes of division of points into subsets
+    :return: best fit lines for each segment
+    """
     lines = []
     for i in range(len(dividers) - 1):
         segment_begin = int(dividers[i] - 1)
@@ -141,17 +146,31 @@ def compute_lines_for_points_split_by_dividers(points, dividers):
 
 
 def compute_total_mse(points, dividers, lines):
+    """
+    :param points: input data points
+    :param dividers: indexes of division of points into subsets
+    :param lines: lines that describe each segment
+    :return: sum over mean squeared distance for each point to its best fit line
+    :type: float
+    """
     mse = 0.0
     for segment_begin, segment_end, line in zip(dividers[:-1], dividers[1:], lines):
         segment = points[int(segment_begin):int(segment_end), :]
         best_fit_line = calc_best_fit_line_polyfit(segment)
         mse += sqrd_dist_sum(segment, best_fit_line)
-        print(segment_begin, segment_end, line)
     return mse
 
 
-# def visualize_2d(points, dividers, coreset_size, coreset_points, show=False):
 def visualize_2d(points, coreset, k, eps, show=False):
+    """
+    Visualizes results on a plot, scattering all input points with overlay of deviders, best fit lines
+    :param points: input data points
+    :param coreset: coreset of points
+    :param k: number of segments
+    :param eps: error (0 < eps < 1)
+    :param show: if show figure window
+    :return: void
+    """
     plt.figure(figsize=(19, 9), dpi=200)
 
     import ksegment
