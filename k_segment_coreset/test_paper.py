@@ -1,6 +1,6 @@
 import numpy as np
-import utils
-from utils import gen_synthetic_graph
+import utils_seg
+from utils_seg import gen_synthetic_graph
 import ksegment
 import CoresetKSeg
 import unittest
@@ -34,9 +34,9 @@ class KSegmentTest(unittest.TestCase):
         dividers = ksegment.coreset_k_segment(coreset, k)
         coreset_points = ksegment.get_coreset_points(coreset)
         print("original data len\t{}\ncoreset points len:\t{}".format(len(p), len(coreset_points)))
-        utils.visualize_2d(p, dividers, len(coreset), coreset_points,
-                           show=True
-                           )     # Uncomment to see results
+        utils_seg.visualize_2d(p, dividers, len(coreset), coreset_points,
+                               show=True
+                               )     # Uncomment to see results
         print (len(p), len(coreset_points))
         self.assertGreater(len(p), len(coreset_points))
 
@@ -70,30 +70,29 @@ class KSegmentTest(unittest.TestCase):
         k = 10
         eps = 0.3
         n = 5000
-        points = gen_synthetic_graph(n, k, dim, deviation=2, max_diff=7)
+        # points = gen_synthetic_graph(n, k, dim, deviation=2, max_diff=7)
         points = np.c_[np.mgrid[1:len(points) + 1], points]
         # points = np.c_[np.mgrid[0:n], points]
 
         n = len(points)
         f = [0.0] * n
-        bi_crit = CoresetKSeg.bicriteria(points, k, f, mul=4)
+        bi_crit = CoresetKSeg.bicriteria(points, k, f, mul=1)
         print(f, sum(f))
         bi_crit2 = CoresetKSeg.bicriteria2(points, k, mul=4)
-
-        # f = [float] * (len(points) + 1)
 
         sigma = (eps ** 2 * bi_crit) / (100 * k * np.log2(len(points)))
         coreset = CoresetKSeg.BalancedPartition(points, eps, sigma, False)
 
         print("bicritiria estimate:")
-        print(bi_crit, bi_crit2)
+        print(bi_crit, bi_crit2, sum(f))
         print("balanced partition len: {} /original {} = 1 / {}".format(len(coreset), len(points),
                                                                        len(points) / len(coreset)))
         print("coreset size percent: {:.2f}%".format(100 * len(coreset)/float(len(points))))
-        coreset_points = ksegment.get_coreset_points(coreset)
-        dividers = ksegment.coreset_k_segment(coreset, k)
+        # coreset_points = ksegment.get_coreset_points(coreset)
+        # dividers = ksegment.coreset_k_segment(coreset, k)
         # coreset size has to be: O(dk/eps^2)
-        utils.visualize_2d(points, dividers, len(coreset), coreset_points, show=True)
+        # utils_seg.visualize_2d(points, dividers, len(coreset), coreset_points, show=True)
+        utils_seg.visualize_2d(points, coreset, k, eps, show=True)
         # print(f)
 
     def test_coreset_size_over_k(self):
