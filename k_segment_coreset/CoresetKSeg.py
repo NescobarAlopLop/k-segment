@@ -83,8 +83,8 @@ def bicriteria(points, k, f, mul=4, is_coreset=False):
     :param mul: int
     :return:            cost c a
     """
-    # if len(points) <= (mul * k + 1):
-    if len(points) <= (2 * k + 1):
+    if len(points) <= (mul * k + 1):
+    # if len(points) <= (2 * k + 1):
         # for p in points:
         #     f[p[0]] = 0
         return one_seg_cost(points, is_coreset)
