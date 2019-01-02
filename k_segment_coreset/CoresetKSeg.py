@@ -198,6 +198,17 @@ def build_coreset(points, k, eps, is_coreset=False):
     return BalancedPartition(points, eps, sigma, is_coreset)
 
 
+def build_coreset_for_pyspark(points, k, eps, is_coreset=False):
+    f = [0.0] * (len(points) + 1)
+
+    h = bicriteria(points, k, f, is_coreset=is_coreset)
+    print("bicritiria estimate: h = {}, sum(f) = {}".format(h, sum(f)))
+    sigma = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
+    coreset = BalancedPartition(points, eps, sigma, is_coreset)
+    coreset_points = ksegment.get_coreset_points(coreset)
+    return coreset_points
+
+
 def one_seg_cost(points, is_coreset=False):
     if is_coreset:
         one_segment_coreset = OneSegmentCorset(points, is_coreset)
