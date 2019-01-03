@@ -8,7 +8,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
 s.listen(1)
 while True:
-    print('\nListening for a client at',host , port)
+    print('\nListening for a client at', host, port)
     conn, addr = s.accept()
     print('\nConnected by', addr)
     try:
@@ -22,7 +22,17 @@ while True:
             print('End Of Stream.')
     except socket.error:
         print ('Error Occured.\n\nClient disconnected.\n')
-    finally:
+    except OSError:
         conn.close()
+        conn.shutdown(socket.SHUT_RDWR)
+        s.shutdown(socket.SHUT_RDWR)
         s.close()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((host, port))
+        s.listen(1)
 
+    except KeyboardInterrupt:
+        conn.close()
+        conn.shutdown(socket.SHUT_RDWR)
+        s.shutdown(socket.SHUT_RDWR)
+        s.close()
