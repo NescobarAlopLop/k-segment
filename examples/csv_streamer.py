@@ -28,26 +28,26 @@ def send_line_via_connection(line, conn) -> None:
     conn.send(out)
 
 
-def infinite_stream_txt_file_over_socket(path: str, s) -> None:
+def infinite_stream_txt_file_over_socket(file_path: str, soc) -> None:
     while True:
         print('\nListening for a client at', host, port)
-        conn, addr = s.accept()
+        conn, addr = soc.accept()
         print('\nConnected by', addr)
         try:
             print('\nReading file...\n')
-            with open(path) as f:
+            with open(file_path) as f:
                 for line in f:
                     send_line_via_connection(line, conn)
                     print('Sending line', line)
                     sleep(0.02)
                 print('End Of Stream.')
         except socket.error:
-            print ('Error Occurred.\n\nClient disconnected.\n')
+            print('Error Occurred.\n\nClient disconnected.\n')
         except OSError:
-            destroy_socket(conn, s)
-            s = setup_socket(host, port)
+            destroy_socket(conn, soc)
+            soc = setup_socket(host, port)
         except KeyboardInterrupt:
-            destroy_socket(conn, s)
+            destroy_socket(conn, soc)
 
 
 if __name__ == '__main__':
