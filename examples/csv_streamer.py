@@ -9,7 +9,7 @@ HOST = 'localhost'
 PORT = 9990
 
 
-def setup_socket(host_address: str, host_port: Union[str, int]):
+def setup_socket(host_address: str, host_port: int):
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     soc.bind((host_address, host_port))
     soc.listen(1)
@@ -51,11 +51,10 @@ def infinite_stream_txt_file_over_socket(file_path: str, soc) -> None:
 
 
 if __name__ == '__main__':
-    print(len(sys.argv))
     if len(sys.argv) == 4:
         path = sys.argv[1]
         host = sys.argv[2]
-        port = sys.argv[3]
+        port = int(sys.argv[3])
     else:
         print("How to use?")
         print("\tif no parameters provided default valeus will be used.")
