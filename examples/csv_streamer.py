@@ -1,7 +1,6 @@
 import socket
 from time import sleep
 import sys
-from typing import Union
 
 
 PATH = '/home/ge/k-segment/datasets/KO.csv'
@@ -9,26 +8,26 @@ HOST = 'localhost'
 PORT = 9990
 
 
-def setup_socket(host_address: str, host_port: int):
+def setup_socket(host_address: str, host_port: int) -> socket:
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     soc.bind((host_address, host_port))
     soc.listen(1)
     return soc
 
 
-def destroy_socket(conn, soc) -> None:
+def destroy_socket(conn: socket, soc: socket) -> None:
     conn.close()
     conn.shutdown(socket.SHUT_RDWR)
     soc.shutdown(socket.SHUT_RDWR)
     soc.close()
 
 
-def send_line_via_connection(line, conn) -> None:
+def send_line_via_connection(line: str, conn: socket) -> None:
     out = line.encode('utf-8')
     conn.send(out)
 
 
-def infinite_stream_txt_file_over_socket(file_path: str, soc) -> None:
+def infinite_stream_txt_file_over_socket(file_path: str, soc: socket) -> None:
     while True:
         print('\nListening for a client at', host, port)
         conn, addr = soc.accept()
