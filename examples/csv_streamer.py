@@ -24,6 +24,7 @@ def destroy_socket(conn: socket, soc: socket) -> None:
 
 def send_line_via_connection(line: str, conn: socket) -> None:
     out = line.encode('utf-8')
+    print('Sending line', line)
     conn.send(out)
 
 
@@ -37,7 +38,6 @@ def infinite_stream_txt_file_over_socket(file_path: str, soc: socket) -> None:
             with open(file_path) as f:
                 for line in f:
                     send_line_via_connection(line, conn)
-                    print('Sending line', line)
                     sleep(0.02)
                 print('End Of Stream.')
         except socket.error:
