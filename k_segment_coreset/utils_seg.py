@@ -237,7 +237,11 @@ def gen_synthetic_graph(n, k, dim=1, deviation=20, max_diff=40):
     return data
 
 
-def load_csv_file(path):
+def load_csv_into_dataframe(path: str) -> 'pd.DataFrame':
+    """
+    :param path:
+    :return:
+    """
     df = pd.read_csv(
         filepath_or_buffer=path,
         skiprows=1,
@@ -245,4 +249,4 @@ def load_csv_file(path):
         sep=',',
         engine='python'
     )
-    return df.values
+    return df
