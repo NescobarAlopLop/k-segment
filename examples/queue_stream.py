@@ -48,4 +48,4 @@ if __name__ == "__main__":
         rddQueue += [ssc.sparkContext.parallelize([j for j in range(1, 1001)], 10)]
     # time.sleep(6)
     # ssc.stop(stopSparkContext=True, stopGraceFully=True)
-    ssc.awaitTerminationOrTimeout(timeout=10)
+    ssc.awaitTerminationOrTimeout(timeout=5)
