@@ -116,6 +116,28 @@ class KSegmentTest(unittest.TestCase):
         self.assertGreaterEqual(real_cost, bicritiria_cost2)
         self.assertGreaterEqual(real_cost, bicritiria_orig)
 
+    def test_compare_spark_shuffle_map_to_singlethread(self):
+        points = load_csv_into_dataframe("/home/ge/k-segment/datasets/KO_no_date.csv").values
+        points = np.column_stack((np.arange(1, len(points) + 1), points[:]))
+        k = 5
+        eps = 0.4
+        coreset = CoresetKSeg.build_coreset(points, k, eps)
+        coreset2 = CoresetKSeg.build_coreset(coreset, k, eps, True)
+        # from pyspark import SparkContext, SparkConf
+        # conf = SparkConf().setMaster('local[*]').setAppName('Test')
+        # # Set scheduler to FAIR: http://spark.apache.org/docs/latest/job-scheduling.html#scheduling-within-an-application
+        # conf.set('spark.scheduler.mode', 'FAIR')
+        # sc = SparkContext(conf=conf)
+        # points_rdd_1 = points_rdd(lambda x: CoresetKSeg.build_coreset_on_pyspark(x, k, eps))
+        # visualize_2d(points, coreset, k, eps, show=True)
+        # points_rdd = sc.parallelize(points, k).glom()
+        # coresets_rdd_collected = points_rdd.map(lambda x: CoresetKSeg.build_coreset_on_pyspark(np.asarray(x), k, eps))\
+        #     .reduce(print)
+        # print(coresets_rdd_collected)
+        # print(coresets_rdd_collected)
+        # sc.stop()
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
