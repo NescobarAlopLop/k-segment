@@ -5,7 +5,7 @@ import ksegment
 import CoresetKSeg
 import unittest
 import matplotlib.pyplot as plt
-# import cProfile
+from utils_seg import load_csv_into_dataframe, visualize_2d
 
 
 def load_csv_file(path, n_rows=None):
@@ -123,3 +123,13 @@ class KSegmentTest(unittest.TestCase):
         plt.show()
         # utils.visualize_2d(points, dividers, len(coreset), coreset_points, show=True)
         # print(f)
+
+    def test_coreset_k_seg_class(self):
+        d = load_csv_into_dataframe("/home/ge/k-segment/datasets/KO_no_date.csv").values[600:800]
+        k = 4
+        eps = 0.3
+
+        cks = CoresetKSeg.CoresetKSeg(d, k, eps, add_index_col=True)
+        res_coreset = cks.compute_coreset()
+        # dividers = cks.compute_dividers()
+        visualize_2d(cks.data, res_coreset, k, eps, show=True)

@@ -24,7 +24,7 @@ class Stream(object):
         points = np.vstack([pset1.points, pset2.points])
         weights = np.hstack([pset1.weights, pset2.weights])
         cset = self.coreset_alg(points, self.k, weights)
-        coreset, weights = cset.compute(self.coreset_size)
+        coreset, weights = cset.compute_coreset(self.coreset_size)
         return WeightedPointSet(coreset, weights)
 
     def _add_leaf(self, points, weights):
