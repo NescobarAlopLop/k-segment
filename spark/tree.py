@@ -111,6 +111,6 @@ if __name__ == "__main__":
 
 
     result = computeTree(points, k_segment_merge)
-    print result
-    print len(result)
-    print ksegment.coreset_k_segment_fast_segmentation(result, k, eps)
+    print(result)
+    print(len(result))
+    print(ksegment.coreset_k_segment_fast_segmentation(result, k, eps))
