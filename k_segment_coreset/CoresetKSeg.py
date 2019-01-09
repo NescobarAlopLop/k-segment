@@ -7,14 +7,13 @@ import ksegment
 class CoresetKSeg(object):
     def __init__(self, data: np.ndarray, k: int, eps: float, add_index_col: bool = True, weights=None) -> None:
         if add_index_col:
-            self.data = self.add_index_col_to_data(data)
+            data = self.add_index_col_to_data(data)
         else:
-            self.data = data
+            data = data
         self.k = k
         if eps < 0 or eps > 1:
             raise Exception('CoresetKSeg eps error value has to be 0 < eps <= 1')
         self.eps = eps
-        self.k_eps_coreset = [SegmentCoreset]
         self.dividers = None
         self.is_coreset = False
         self.f = [0.0] * (len(data) + 1)
@@ -22,24 +21,30 @@ class CoresetKSeg(object):
             self.f = [0.0] * (len(self.k_eps_coreset) + 1)
             self.is_coreset = True
             # self.weights = weights
+        self.k_eps_coreset = self.compute_coreset(data, self.k, self.eps, self.f, self.is_coreset)
+        # del self.data
 
-    def compute_coreset(self) -> list:
-        h = self.bicriteria(self.data, self.k, self.f, is_coreset=self.is_coreset)
-        # sigma is calculated according to the formula in the paper
-        sigma = (self.eps ** 2 * h) / (100 * self.k * np.log2(len(self.data)))
-        self.k_eps_coreset = self.balanced_partition(self.data, self.eps, sigma, self.is_coreset)
+    def __call__(self, data):
+        self.k_eps_coreset = self.compute_coreset(data, self.k, self.eps, self.f, self.is_coreset)
         return self.k_eps_coreset
 
     @staticmethod
-    def bicriteria(points: np.ndarray, k: int, f: list, mul: int = 4, is_coreset: bool = False) -> float:
+    def compute_coreset(data, k: int, eps: float, f: list, is_coreset: bool = False) -> list:
+        h = CoresetKSeg.compute_bicriteria(data, k, f, is_coreset=is_coreset)
+        # sigma is calculated according to the formula in the paper
+        sigma = (eps ** 2 * h) / (100 * k * np.log2(len(data)))
+        return CoresetKSeg.balanced_partition(data, eps, sigma, is_coreset)
+
+    @staticmethod
+    def compute_bicriteria(points: np.ndarray, k: int, f: list, mul: int = 4, is_coreset: bool = False) -> float:
         """
-        this fucntion computes bicriteria estimation of data complexity according to algorithm 2
+        this fucntion computes compute_bicriteria estimation of data complexity according to algorithm 2
         :param points:  input data points
         :param k:       number of segments to split the data into
         :param f:       TODO: future use for f* function
         :param mul:     not a magic number, proven value from paper, edit only for debug
         :param is_coreset: if True then input data is a coreset
-        :return:    bicriteria estimation
+        :return:    compute_bicriteria estimation
         """
         if len(points) <= (mul * k + 1):
             # if len(points) <= (2 * k + 1):
@@ -51,7 +56,7 @@ class CoresetKSeg(object):
         one_seg_res = []
         # we partition the signal into 4 k sub - intervals or:
         # partition to mul*k segments and call 1-segment for each
-        # TODO: take into consideration coreset: t(points[start_idx][0])) deosn't exist
+        # TODO: take into consideration coreset: t(points[start_idx][0])) doesn't exist
         if is_coreset:
             print(points[0])
             pass
@@ -65,27 +70,22 @@ class CoresetKSeg(object):
         one_seg_res = sorted(one_seg_res, key=lambda one_res: one_res[0])
         # res = the distances of the min k+1 segments
         cost = 0
-        # sum distances of k+1 min segments and make a list of points to delete from P to get P \ Q from the algo'
+        # sum distances of k+1 min segments and make a list of points to delete from P to get P \ Q from the algo
         rows_to_delete = []
         for start_idx in range(k + 1):
             cost += one_seg_res[start_idx][0]
-            b = one_seg_res[start_idx][2]
-            # e = one_seg_res[start_idx][2]+chunk_size
-            # f[b:e] = [one_seg_res[start_idx][0]] * chunk_size
-            # f[b] =
             rows_to_delete += range(one_seg_res[start_idx][1], one_seg_res[start_idx][1] + chunk_size)
         points = np.delete(points, rows_to_delete, axis=0)
-        return cost + bicriteria(points, k, f, mul, is_coreset)
+        return cost + CoresetKSeg.compute_bicriteria(points, k, f, mul, is_coreset)
 
     @staticmethod
-    def balanced_partition(P, eps: float, bicritiria_est: float, is_coreset=False) -> list:
+    def balanced_partition(points, eps: float, bicritiria_est: float, is_coreset=False) -> list:
         Q = []
         D = []
-        points = P
         # add arbitrary item to list
         dimensions = points[0].C.repPoints.shape[1] if is_coreset else points.shape[1]
         if is_coreset:
-            points.append(P[0])  # arbitrary coreset n+1
+            points.append(points[0])  # arbitrary coreset n+1
         else:
             points = np.vstack((points, np.zeros(dimensions)))  # arbitrary point n+1
         n = len(points)
@@ -105,8 +105,8 @@ class CoresetKSeg(object):
                         Q = []
                     continue
                 T = Q[:-1]
-                C = OneSegmentCorset(T, is_coreset)
-                g = utils_seg.calc_best_fit_line_polyfit(OneSegmentCorset(np.asarray(T), is_coreset).repPoints)
+                C = compute_one_segment_corset(T, is_coreset)
+                g = utils_seg.calc_best_fit_line_polyfit(compute_one_segment_corset(np.asarray(T), is_coreset).repPoints)
                 if is_coreset:
                     b = T[0].b
                     e = T[-1].e
@@ -125,14 +125,25 @@ class CoresetKSeg(object):
     def add_index_col_to_data(data: np.ndarray) -> np.ndarray:
         return np.column_stack((np.arange(1, len(data) + 1), data[:]))
 
+    @property
+    def coreset(self):
+        return self.k_eps_coreset
+
     def __len__(self):
         return len(self.k_eps_coreset)
 
     def __iter__(self):
-        pass
+        self.last = 0
+        return self
+
+    def __next__(self):
+        self.last += 1
+        if self.last >= len(self.coreset):
+            raise StopIteration
+        return self.coreset[self.last]
 
     def __repr__(self):
-        pass
+        return "KSegCoreset size = {}, for k = {}, eps = {:<2}".format(len(self.coreset), self.k, self.eps)
 
     def __str__(self):
         pass
@@ -160,191 +171,18 @@ class SegmentCoreset:
         self.e = e  # coreset ending index
 
     def __repr__(self):
-        return "OneSegmentCoreset " + str(self.b) + "-" + str(self.e) + str(self.C.repPoints)
-
-
-def bicriteria_orig(points, k, is_coreset=False):
-    if len(points) <= (4 * k + 1):
-        return one_seg_cost(points, is_coreset)
-    m = int(math.floor(len(points) / (4 * k)))
-    i = 0
-    j = m
-    # one_seg_res will  hold segment starting index and result (squared distance sum)
-    one_seg_res = []
-    # partition to 4k segments and call 1-segment for each
-    while i < len(points):
-        partition_set = one_seg_cost(points[i:j], is_coreset)
-        one_seg_res.append((partition_set, int(i)))
-        i += m
-        j += m
-    # sort result
-    one_seg_res = sorted(one_seg_res, key=lambda res: res[0])
-    # res = the distances of the min k+1 segments
-    res = 0
-    # sum distances of k+1 min segments and make a list of point to delete from P to get P \ Q from the algorithm
-    rows_to_delete = []
-    for i in range(k + 1):
-        res += one_seg_res[i][0]
-        for j in range(m):
-            rows_to_delete.append(one_seg_res[i][1] + j)
-    points = np.delete(points, rows_to_delete, axis=0)
-    c = bicriteria(points, k, is_coreset)
-    if type(res) != type(c):
-        print(c)
-    return res + c
-
-
-def bicriteria(points, k, f, mul=4, is_coreset=False):
-    """
-    :param points:      input dataset of points
-    :param k:           number of segments
-    :param is_coreset:
-    :param f: float array
-    :param mul: int
-    :return:            cost c a
-    """
-    if len(points) <= (mul * k + 1):
-    # if len(points) <= (2 * k + 1):
-        # for p in points:
-        #     f[p[0]] = 0
-        return one_seg_cost(points, is_coreset)
-    chunk_size = int(math.ceil(len(points) / (mul * k)))
-    # one_seg_res will  hold segment starting index and result (squared distance sum)
-    one_seg_res = []
-    # we partition the signal into 4 k sub - intervals or:
-    # partition to mul*k segments and call 1-segment for each
-    # TODO: take into consideration coreset: t(points[start_idx][0])) deosn't exist
-    if is_coreset:
-        print(points[0])
-        pass
-    for start_idx in range(0, len(points), chunk_size):
-        partition_set = one_seg_cost(points[start_idx:start_idx+chunk_size], is_coreset)
-        tmp = points[start_idx]
-        tmp2 = int(tmp[0])
-        one_seg_res.append((partition_set, start_idx, tmp2))
-        # one_seg_res.append((partition_set, start_idx, int(points[start_idx][0])))
-    # TODO: switch to max heap and test performance
-    one_seg_res = sorted(one_seg_res, key=lambda one_res: one_res[0])
-    # res = the distances of the min k+1 segments
-    cost = 0
-    # sum distances of k+1 min segments and make a list of points to delete from P to get P \ Q from the algo'
-    rows_to_delete = []
-    for start_idx in range(k + 1):
-        cost += one_seg_res[start_idx][0]
-        b = one_seg_res[start_idx][2]
-        # e = one_seg_res[start_idx][2]+chunk_size
-        # f[b:e] = [one_seg_res[start_idx][0]] * chunk_size
-        # f[b] =
-        rows_to_delete += range(one_seg_res[start_idx][1], one_seg_res[start_idx][1] + chunk_size)
-    points = np.delete(points, rows_to_delete, axis=0)
-    return cost + bicriteria(points, k, f, mul, is_coreset)
-
-
-def bicriteria2(points, k, mul=4, is_coreset=False):
-    """
-    :param points:      input dataset of points
-    :param k:           number of segments
-    :param mul: int
-    :param is_coreset:
-    :return:            cost c a
-    """
-    if len(points) <= (mul * k + 1):
-        return 0
-    m = int(math.floor(len(points) / (mul * k)))
-    i = 0
-    j = m
-    # one_seg_res will  hold segment starting index and result (squred distance sum)
-    one_seg_res = []
-    # partition to 4k segments and call 1-segment for each
-    while i < len(points):
-        partition_set = one_seg_cost(points[i:j], is_coreset)
-        # partition_set = bicriteria(points[i:j], k, is_coreset)
-        one_seg_res.append((partition_set, int(i)))
-        i += m
-        j += m
-    # sort result
-    one_seg_res = sorted(one_seg_res, key=lambda res: res[0])
-    # res = the distances of the min k+1 segments
-    cost = 0
-    # sum distances of k+1 min segments and make a list of points to delete from P to get P \ Q from the algo'
-    rows_to_delete = []
-    for i in range(k + 1):
-        cost += one_seg_res[i][0]
-        for j in range(m):
-            rows_to_delete.append(one_seg_res[i][1] + j)
-    points = np.delete(points, rows_to_delete, axis=0)
-    return cost + bicriteria2(points, k, mul, is_coreset)
-
-
-def BalancedPartition(P, a, bicritiriaEst, is_coreset=False):
-    Q = []
-    D = []
-    points = P
-    # add arbitrary item to list
-    dimensions = points[0].C.repPoints.shape[1] if is_coreset else points.shape[1]
-    if is_coreset:
-        points.append(P[0])  # arbitrary coreset n+1
-    else:
-        points = np.vstack((points, np.zeros(dimensions)))  # arbitrary point n+1
-    n = len(points)
-    for i in range(0, n):
-        Q.append(points[i])
-        cost = one_seg_cost(np.asarray(Q), is_coreset)
-        # if current number of points can be turned into a coreset - 3 conditions :
-        # 1) cost passed threshold
-        # 2) number of points to be packaged greater than dimensions + 1
-        # 3) number of points left greater then dimensions + 1 (so they could be packaged later)
-        if cost > bicritiriaEst \
-                and (is_coreset or (len(Q) > dimensions + 1 and dimensions + 1 <= n - 1 - i)) \
-                or i == n - 1:
-            if is_coreset and len(Q) == 1:
-                if i != n - 1:
-                    D.append(Q[0])
-                    Q = []
-                continue
-            T = Q[:-1]
-            C = OneSegmentCorset(T, is_coreset)
-            g = utils_seg.calc_best_fit_line_polyfit(OneSegmentCorset(np.asarray(T), is_coreset).repPoints)
-            if is_coreset:
-                b = T[0].b
-                e = T[-1].e
-            else:
-                b = T[0][0]     # signal index of first item in T
-                e = T[-1][0]    # signal index of last item in T
-            D.append(SegmentCoreset(C, g, int(b), int(e)))
-            Q = [Q[-1]]
-    return D
-
-
-def build_coreset(points, k, eps, is_coreset=False):
-    """
-    Input: A set P = f(1; p1); · ·· ; (n; pn)g in R^(d+1).
-    Output: A (k; ")-coreset (C; w)
-    """
-    f = [0.0] * (len(points) + 1)
-
-    h = bicriteria(points, k, f, is_coreset=is_coreset)
-    print("bicritiria estimate: h = {}, sum(f) = {}".format(h, sum(f)))
-    sigma = (eps ** 2 * h) / (100 * k * np.log2(len(points)))
-    k_eps_coreset = BalancedPartition(points, eps, sigma, is_coreset)
-    return k_eps_coreset
-
-
-def build_coreset_on_pyspark(points, k, eps, is_coreset=False):
-    coreset = build_coreset(points, k, eps, is_coreset)
-    coreset_points = ksegment.get_coreset_points(coreset)
-    return coreset_points
+        return "OneSegmentCoreset {} - {}\n{}".format(self.b, self.e, self.C.repPoints)
 
 
 def one_seg_cost(points, is_coreset=False):
     if is_coreset:
-        one_segment_coreset = OneSegmentCorset(points, is_coreset)
+        one_segment_coreset = compute_one_segment_corset(points, is_coreset)
         return utils_seg.cost_best_fit_line_to_points(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
     else:
         return utils_seg.cost_best_fit_line_to_points(points, is_coreset)
 
 
-def OneSegmentCorset(P, is_coreset=False):
+def compute_one_segment_corset(P, is_coreset=False):
     if len(P) < 2:
         return P[0].C
     if is_coreset:
@@ -390,7 +228,7 @@ def OneSegmentCorset(P, is_coreset=False):
     return OneSegCoreset(repPoints=B, weight=w, SVt=SVt)
 
 
-def PiecewiseCoreset(n, eps):
+def compute_piecewise_coreset(n, eps):
     def s(index, points_number):
         return max(4.0 / float(index), 4.0 / (points_number - index + 1))
     eps = eps / np.log2(n)

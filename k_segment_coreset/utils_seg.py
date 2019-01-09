@@ -3,6 +3,7 @@ import mpl_toolkits.mplot3d as m3d
 import matplotlib.pyplot as plt
 from datetime import datetime
 import pandas as pd
+import ksegment
 # import SparkContext
 # from pyspark import SparkConf, SparkContext
 # conf = (SparkConf()
@@ -174,7 +175,6 @@ def visualize_2d(points, coreset, k, eps, show=False):
     plt.figure(figsize=(19, 9), dpi=400)
     plt.scatter(points[:, 0], points[:, 1], s=3)
 
-    import ksegment
     coreset_points = ksegment.get_coreset_points(coreset)
     plt.scatter(coreset_points[:, 0], coreset_points[:, 1], s=10, c='r', alpha=0.3)
     # i = 0
@@ -194,11 +194,11 @@ def visualize_2d(points, coreset, k, eps, show=False):
     total_mse = compute_total_mse(points, dividers, segments_lines)
 
     plt.suptitle('data size {}, coreset size {}, k = {}, error = {:<.2f}% mse for all points = {:<.3f}'
-                 .format(len(points), len(coreset_points), len(segments_lines), eps * 100, total_mse))
+                 .format(len(points), len(coreset), len(segments_lines), eps * 100, total_mse))
     plt.legend()
     plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))
     print("saving image: {:%Y_%m_%d_%s}.png".format(datetime.now()))
-    print("original data len\t{}\ncoreset points len:\t{}".format(len(points), len(coreset_points)))
+    print("original data len\t{}\ncoreset points len:\t{}".format(len(points), len(coreset)))
     if show:
         plt.show()
     # plt.clf()

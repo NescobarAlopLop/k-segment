@@ -103,7 +103,7 @@ def calc_coreset_prep_dist(D):
             C = []
             for coreset in D[first_coreset:second_coreset+1]:
                 C.append(coreset)
-            coreset_of_coresets = CoresetKSeg.OneSegmentCorset(C, True)
+            coreset_of_coresets = CoresetKSeg.compute_one_segment_corset(C, True)
             best_fit_line = utils_seg.calc_best_fit_line_polyfit(coreset_of_coresets.repPoints, True)
             fitting_cost = utils_seg.sqrd_dist_sum(coreset_of_coresets.repPoints, best_fit_line)*coreset_of_coresets.weight
             prep_dist[first_coreset, second_coreset] = fitting_cost
@@ -147,7 +147,7 @@ def coreset_k_segment_fast_segmentation(D, k, eps):
     pw = np.empty((0, 4))
     for coreset in D:
         pts = utils_seg.pt_on_line(range(int(coreset.b), int(coreset.e) + 1), coreset.g)
-        w = CoresetKSeg.PiecewiseCoreset(len(pts[0]), eps)
+        w = CoresetKSeg.compute_piecewise_coreset(len(pts[0]), eps)
         p_coreset = np.column_stack((pts[0], pts[1], pts[2], w))
         p_coreset_filtered = p_coreset[p_coreset[:, 3] > 0]
         # print "weighted points", p_coreset_filtered
