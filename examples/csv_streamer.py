@@ -9,6 +9,13 @@ PORT = 9990
 
 
 def infinite_stream_txt_file_over_socket(file_path: str, soc: socket) -> None:
+    """
+    This function will send text file contents row by row over provided socket
+    I've made it to test pysparks wordcount
+    :param file_path:
+    :param soc:
+    :return:
+    """
     while True:
         print('\nListening for a client at', host, port)
         conn, addr = soc.accept()
