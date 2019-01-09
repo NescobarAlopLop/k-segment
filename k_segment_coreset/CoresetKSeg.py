@@ -29,14 +29,14 @@ class CoresetKSeg(object):
         return self.k_eps_coreset
 
     @staticmethod
-    def compute_coreset(data, k: int, eps: float, f: list, is_coreset: bool = False) -> list:
+    def compute_coreset(data, k: int, eps: float, f: list = None, is_coreset: bool = False) -> list:
         h = CoresetKSeg.compute_bicriteria(data, k, f, is_coreset=is_coreset)
         # sigma is calculated according to the formula in the paper
         sigma = (eps ** 2 * h) / (100 * k * np.log2(len(data)))
         return CoresetKSeg.balanced_partition(data, eps, sigma, is_coreset)
 
     @staticmethod
-    def compute_bicriteria(points: np.ndarray, k: int, f: list, mul: int = 4, is_coreset: bool = False) -> float:
+    def compute_bicriteria(points: np.ndarray, k: int, f: list = None, mul: int = 4, is_coreset: bool = False) -> float:
         """
         this fucntion computes compute_bicriteria estimation of data complexity according to algorithm 2
         :param points:  input data points

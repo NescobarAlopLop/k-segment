@@ -23,7 +23,7 @@ class KSegmentTest(unittest.TestCase):
         data = np.genfromtxt("input.csv", delimiter=" ")
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        coreset = CoresetKSeg.build_coreset(p, k, epsilon)
+        coreset = CoresetKSeg.CoresetKSeg.compute_coreset(p, k, epsilon)
         dividers = ksegment.coreset_k_segment(coreset, k)
         utils_seg.visualize_3d(p, dividers)     # Uncomment to see results
 
@@ -36,7 +36,7 @@ class KSegmentTest(unittest.TestCase):
         data = np.genfromtxt("input.csv", delimiter=" ")
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        core = CoresetKSeg.build_coreset(p, k, epsilon)
+        core = CoresetKSeg.CoresetKSeg.compute_coreset(p, k, epsilon)
         print(core)
         dividers = ksegment.coreset_k_segment_fast_segmentation(core, k, epsilon)
         print("dividers", dividers)
@@ -52,8 +52,8 @@ class KSegmentTest(unittest.TestCase):
         data = np.genfromtxt("input.csv", delimiter=" ")
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        coreset = CoresetKSeg.build_coreset(p, k, epsilon)
-        coreset_of_coreset = CoresetKSeg.build_coreset(coreset, k, epsilon, is_coreset=True)
+        coreset = CoresetKSeg.CoresetKSeg.compute_coreset(p, k, epsilon)
+        coreset_of_coreset = CoresetKSeg.CoresetKSeg.compute_coreset(coreset, k, epsilon, is_coreset=True)
         dividers = ksegment.coreset_k_segment(coreset_of_coreset, k)
         # utils.visualize_3d(p, dividers) # Uncomment to see resultss
 
@@ -65,9 +65,8 @@ class KSegmentTest(unittest.TestCase):
 
         p = np.c_[np.mgrid[1:n + 1], data]
 
-        bicritiria_cost = CoresetKSeg.bicriteria(p, k, f)
-        bicritiria_cost2 = CoresetKSeg.bicriteria2(p, k)
-        print("Bicritiria estimate: ", bicritiria_cost, bicritiria_cost2)
+        bicritiria_cost = CoresetKSeg.CoresetKSeg.compute_bicriteria(p, k, f)
+        print("Bicritiria estimate: ", bicritiria_cost)
         real_cost = utils_seg.calc_cost_dividers(p, ksegment.k_segment(p, k))
         print("real cost: ", real_cost)
         self.assertGreaterEqual(real_cost, bicritiria_cost)
@@ -79,9 +78,8 @@ class KSegmentTest(unittest.TestCase):
         data = example4(n)
         p = np.column_stack((np.arange(1, len(data) + 1), data[:]))
 
-        bicritiria_cost = CoresetKSeg.bicriteria(p, k, f)
-        bicritiria_cost2 = CoresetKSeg.bicriteria2(p, k)
-        print("Bicritiria estimate: ", bicritiria_cost, bicritiria_cost2)
+        bicritiria_cost = CoresetKSeg.CoresetKSeg.compute_bicriteria(p, k, f)
+        print("Bicritiria estimate: ", bicritiria_cost)
         real_cost = utils_seg.calc_cost_dividers(p, ksegment.k_segment(p, k))
         print("real cost: ", real_cost)
         self.assertGreaterEqual(real_cost, bicritiria_cost)
