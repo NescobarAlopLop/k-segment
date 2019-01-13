@@ -73,9 +73,7 @@ class CoresetKSeg(object):
         :return:    compute_bicriteria estimation
         """
         if len(points) <= (mul * k + 1):
-            # if len(points) <= (2 * k + 1):
-            # for p in points:
-            #     f[p[0]] = 0
+            # TODO: f: = a 1 - segment mean of P
             return one_seg_cost(points, is_coreset)
         chunk_size = int(math.ceil(len(points) / (mul * k)))
         # one_seg_res will  hold segment starting index and result (squared distance sum)
@@ -88,13 +86,10 @@ class CoresetKSeg(object):
             pass
         for start_idx in range(0, len(points), chunk_size):
             partition_set = one_seg_cost(points[start_idx:start_idx + chunk_size], is_coreset)
-            tmp = points[start_idx]
-            tmp2 = int(tmp[0])
-            one_seg_res.append((partition_set, start_idx, tmp2))
-            # one_seg_res.append((partition_set, start_idx, int(points[start_idx][0])))
+            one_seg_res.append((partition_set, start_idx))
         # TODO: switch to max heap and test performance
         one_seg_res = sorted(one_seg_res, key=lambda one_res: one_res[0])
-        # res = the distances of the min k+1 segments
+        # cost = the distances of the min k+1 segments
         cost = 0
         # sum distances of k+1 min segments and make a list of points to delete from P to get P \ Q from the algo
         rows_to_delete = []
