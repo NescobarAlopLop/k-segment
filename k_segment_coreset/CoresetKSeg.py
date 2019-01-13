@@ -2,6 +2,32 @@ import numpy as np
 import math
 import utils_seg
 import ksegment
+from typing import Union, List, Optional
+
+
+class OneSegCoreset:
+    __slots__ = ['repPoints', 'weight', 'SVt']
+
+    def __init__(self, repPoints, weight, SVt):
+        self.repPoints = repPoints
+        self.weight = weight
+        self.SVt = SVt
+
+
+class SegmentCoreset:
+    __slots__ = ['C', 'g', 'b', 'e']
+
+    def __init__(self, coreset: OneSegCoreset, g: np.ndarray, b: int, e: int) -> None:
+        self.C = coreset  # 1-segment coreset
+        self.g = g  # best line
+        self.b = b  # coreset beginning index
+        self.e = e  # coreset ending index
+
+    def __repr__(self):
+        return "OneSegmentCoreset {} - {} {}".format(self.b, self.e, self.C.repPoints)
+
+    def __str__(self):
+        return "\nOneSegmentCoreset {} - {}\n{}".format(self.b, self.e, self.C.repPoints)
 
 
 class CoresetKSeg(object):
@@ -36,7 +62,7 @@ class CoresetKSeg(object):
         return CoresetKSeg.balanced_partition(data, eps, sigma, is_coreset)
 
     @staticmethod
-    def compute_bicriteria(points: np.ndarray, k: int, f: list = None, mul: int = 4, is_coreset: bool = False) -> float:
+    def compute_bicriteria(points: Union[np.ndarray, List[OneSegCoreset]], k: int, f: list = None, mul: int = 4, is_coreset: bool = False) -> float:
         """
         this fucntion computes compute_bicriteria estimation of data complexity according to algorithm 2
         :param points:  input data points
@@ -79,7 +105,7 @@ class CoresetKSeg(object):
         return cost + CoresetKSeg.compute_bicriteria(points, k, f, mul, is_coreset)
 
     @staticmethod
-    def balanced_partition(points, eps: float, bicritiria_est: float, is_coreset=False) -> list:
+    def balanced_partition(points: Union[np.ndarray, List[OneSegCoreset]], eps: float, bicritiria_est: float, is_coreset=False) -> List[SegmentCoreset]:
         Q = []
         D = []
         # add arbitrary item to list
@@ -152,28 +178,6 @@ class CoresetKSeg(object):
         pass
 
 
-class OneSegCoreset:
-    __slots__ = ['repPoints', 'weight', 'SVt']
-
-    def __init__(self, repPoints, weight, SVt):
-        self.repPoints = repPoints
-        self.weight = weight
-        self.SVt = SVt
-
-
-class SegmentCoreset:
-    __slots__ = ['C', 'g', 'b', 'e']
-
-    def __init__(self, coreset: OneSegCoreset, g: np.ndarray, b: int, e: int) -> None:
-        self.C = coreset  # 1-segment coreset
-        self.g = g  # best line
-        self.b = b  # coreset beginning index
-        self.e = e  # coreset ending index
-
-    def __repr__(self):
-        return "OneSegmentCoreset {} - {}\n{}".format(self.b, self.e, self.C.repPoints)
-
-
 def one_seg_cost(points, is_coreset=False):
     if is_coreset:
         one_segment_coreset = compute_one_segment_corset(points, is_coreset)
@@ -203,7 +207,8 @@ def compute_one_segment_corset(P, is_coreset=False):
     q = np.identity(X.shape[1])     # q - temporary matrix to build an identity matrix with leftmost column - u
     try:
         q[:, 0] = u / np.linalg.norm(u)
-    except:
+    except Exception as e:
+        print("exception: {}".format(e))
         print("iscoreset:", is_coreset, "P", P, "u:", u, "q:", q)
     Q = np.linalg.qr(q)[0]      # QR decomposition returns in Q what is requested
     if np.allclose(Q[:, 0], -q[:, 0]):
@@ -228,7 +233,8 @@ def compute_one_segment_corset(P, is_coreset=False):
     return OneSegCoreset(repPoints=B, weight=w, SVt=SVt)
 
 
-def compute_piecewise_coreset(n, eps):
+def compute_piecewise_coreset(n, eps, s: Optional[None]):
+    # TODO: provide proper s
     def s(index, points_number):
         return max(4.0 / float(index), 4.0 / (points_number - index + 1))
     eps = eps / np.log2(n)
