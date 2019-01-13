@@ -89,7 +89,7 @@ class KSegmentTest(unittest.TestCase):
         p = test.example3(n)
         p = np.column_stack((np.arange(1, len(p) + 1), p[:]))
         k = 3
-        eps = 0.5
+        eps = 0.1
 
         coreset = CoresetKSeg.CoresetKSeg.compute_coreset(p, k, eps)
 
@@ -97,11 +97,23 @@ class KSegmentTest(unittest.TestCase):
         visualize_2d(p, coreset, k, eps, show=show)
 
     def test_compare_spark_shuffle_map_to_singlethread(self):
-        points = load_csv_into_dataframe("/home/ge/k-segment/datasets/KO_no_date.csv").values
+        # points = load_csv_into_dataframe("/home/ge/k-segment/datasets/KO_no_date.csv").values
+        points = load_csv_into_dataframe("/home/ge/k-segment/datasets/bicriteria test case - coreset.csv").values[:, 1]
         points = np.column_stack((np.arange(1, len(points) + 1), points[:]))
-        k = 5
-        eps = 0.4
+        k = 4
+        eps = 0.2
         coreset = CoresetKSeg.CoresetKSeg.compute_coreset(points, k, eps)
+        visualize_2d(points, coreset, k, eps, show=True)
+
+        coreset2 = CoresetKSeg.CoresetKSeg.compute_coreset(coreset, k, eps, is_coreset=True)
+        visualize_2d(ksegment.get_coreset_points(coreset), coreset2, k, eps, show=True)
+
+        coreset_class = CoresetKSeg.CoresetKSeg(points, k, eps, False, weights=None)
+        visualize_2d(points, coreset_class.k_eps_coreset, k, eps, show=False)
+        coreset_class2 = coreset_class.compute_coreset(coreset_class.k_eps_coreset, k, eps, is_coreset=True)
+        visualize_2d(ksegment.get_coreset_points(coreset_class.k_eps_coreset), coreset_class2, k, eps, show=False)
+        # print(coreset[:4])
+        # print(coreset_class.k_eps_coreset[:4])
         # from pyspark import SparkContext, SparkConf
         # conf = SparkConf().setMaster('local[*]').setAppName('Test')
         # # Set scheduler to FAIR: http://spark.apache.org/docs/latest/job-scheduling.html#scheduling-within-an-application

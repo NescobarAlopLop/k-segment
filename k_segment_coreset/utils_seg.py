@@ -172,7 +172,7 @@ def visualize_2d(points, coreset, k, eps, show=False):
     :param show: if show figure window
     :return: void
     """
-    plt.figure(figsize=(19, 9), dpi=400)
+    plt.figure(figsize=(19, 9), dpi=200)
     plt.scatter(points[:, 0], points[:, 1], s=3)
 
     coreset_points = ksegment.get_coreset_points(coreset)
