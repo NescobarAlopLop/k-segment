@@ -62,7 +62,8 @@ class CoresetKSeg(object):
         return CoresetKSeg.balanced_partition(data, eps, sigma, is_coreset)
 
     @staticmethod
-    def compute_bicriteria(points: Union[np.ndarray, List[OneSegCoreset]], k: int, f: list = None, mul: int = 4, is_coreset: bool = False) -> float:
+    def compute_bicriteria(points: Union[np.ndarray, List[OneSegCoreset]],
+                           k: int, f: list = None, mul: int = 4, is_coreset: bool = False) -> float:
         """
         this fucntion computes compute_bicriteria estimation of data complexity according to algorithm 2
         :param points:  input data points
@@ -80,10 +81,6 @@ class CoresetKSeg(object):
         one_seg_res = []
         # we partition the signal into 4 k sub - intervals or:
         # partition to mul*k segments and call 1-segment for each
-        # TODO: take into consideration coreset: t(points[start_idx][0])) doesn't exist
-        if is_coreset:
-            print(points[0])
-            pass
         for start_idx in range(0, len(points), chunk_size):
             partition_set = one_seg_cost(points[start_idx:start_idx + chunk_size], is_coreset)
             one_seg_res.append((partition_set, start_idx))
