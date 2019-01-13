@@ -55,7 +55,7 @@ class CoresetKSeg(object):
         return self.k_eps_coreset
 
     @staticmethod
-    def compute_coreset(data, k: int, eps: float, f: list = None, is_coreset: bool = False) -> list:
+    def compute_coreset(data, k: int, eps: float, f: list = None, is_coreset: bool = False) -> List[SegmentCoreset]:
         h = CoresetKSeg.compute_bicriteria(data, k, f, is_coreset=is_coreset)
         # sigma is calculated according to the formula in the paper
         sigma = (eps ** 2 * h) / (100 * k * np.log2(len(data)))
