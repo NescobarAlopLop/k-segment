@@ -31,35 +31,34 @@ class SegmentCoreset:
 
 
 class CoresetKSeg(object):
-    def __init__(self, data: np.ndarray, k: int, eps: float, add_index_col: bool = True, weights=None) -> None:
-        if add_index_col:
-            data = self.add_index_col_to_data(data)
-        else:
-            data = data
+    def __init__(self, k: int, eps: float, weights=None) -> None:
         self.k = k
         if eps < 0 or eps > 1:
             raise Exception('CoresetKSeg eps error value has to be 0 < eps <= 1')
         self.eps = eps
-        self.dividers = None
         self.is_coreset = False
-        self.f = [0.0] * (len(data) + 1)
-        if weights is not None:
-            self.f = [0.0] * (len(self.k_eps_coreset) + 1)
-            self.is_coreset = True
-            # self.weights = weights
-        self.k_eps_coreset = self.compute_coreset(data, self.k, self.eps, self.f, self.is_coreset)
-        # del self.data
+        self.weights = weights
+        self.k_eps_coreset = []
 
     def __call__(self, data):
         self.k_eps_coreset = self.compute_coreset(data, self.k, self.eps, self.f, self.is_coreset)
         return self.k_eps_coreset
 
+    def compute(self, data_points: Union[np.ndarray, List[SegmentCoreset]]):
+        if type(data_points) is not np.ndarray:
+            self.is_coreset = True
+        self.k_eps_coreset = self.compute_coreset(data_points, self.k, self.eps, is_coreset=self.is_coreset)
+        return self.k_eps_coreset, compute_piecewise_coreset(len(self), self.eps)
+
     @staticmethod
     def compute_coreset(data, k: int, eps: float, f: list = None, is_coreset: bool = False) -> List[SegmentCoreset]:
         h = CoresetKSeg.compute_bicriteria(data, k, f, is_coreset=is_coreset)
         # sigma is calculated according to the formula in the paper
-        sigma = (eps ** 2 * h) / (100 * k * np.log2(len(data)))
-        return CoresetKSeg.balanced_partition(data, eps, sigma, is_coreset)
+        try:
+            sigma = (eps ** 2 * h) / (100 * k * np.log2(len(data)))
+            return CoresetKSeg.balanced_partition(data, eps, sigma, is_coreset)
+        except TypeError as e:
+            print('in compute_coreset error: {}'.format(e))
 
     @staticmethod
     def compute_bicriteria(points: Union[np.ndarray, List[OneSegCoreset]],
@@ -136,8 +135,7 @@ class CoresetKSeg(object):
         return D
 
     def compute_dividers(self) -> np.ndarray:
-        self.dividers = ksegment.coreset_k_segment(self.k_eps_coreset, self.k)
-        return self.dividers
+        return ksegment.coreset_k_segment(self.k_eps_coreset, self.k)
 
     @staticmethod
     def add_index_col_to_data(data: np.ndarray) -> np.ndarray:
