@@ -2,11 +2,12 @@
 __author__ = 'Anton'
 import numpy as np
 import pandas as pd
-import ConfigParser
-from cStringIO import StringIO
+# import ConfigParser
+from io import StringIO
 from pyspark import SparkContext
+import configparser
 
-import Coreset
+from CoresetKSeg import CoresetKSeg
 import ksegment
 
 #from coreset import Coreset     # Should i put it inside some conf?
@@ -15,7 +16,7 @@ k = 3
 eps = 10
 
 def init_spark(open_sc=1):
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read('config.ini')
     infile = config.get("conf", "input_s3_url")
     sc = None
@@ -32,7 +33,7 @@ def init_spark(open_sc=1):
 
 
 if __name__ == "__main__":
-    def readPointBatch(Int,iterator):
+    def readPointBatch(Int, iterator):
         return [(Int/2, [pd.read_csv(StringIO("\n".join(iterator)), header=None,
                                      delim_whitespace=True, dtype=np.float64).as_matrix(), None])]
 
@@ -68,7 +69,7 @@ if __name__ == "__main__":
         # case both are coresets
         if type(a) is list and type(b) is list:
             a.extend(b)
-            merged_coreset = Coreset.build_coreset(a, k, eps, True)
+            merged_coreset = CoresetKSeg.compute_coreset(a, k, eps, is_coreset=True)
         # case one of them is a set of points
         elif type(a) is list or type(b) is list:
             if type(a) is list:
@@ -77,12 +78,12 @@ if __name__ == "__main__":
             else:
                 points_to_coreset = a
                 coreset_to_merge = b
-            new_coreset = Coreset.build_coreset(points_to_coreset, k, eps, False)
+            new_coreset = CoresetKSeg.compute_coreset(points_to_coreset, k, eps, is_coreset=False)
             coreset_to_merge.extend(new_coreset)
-            merged_coreset = Coreset.build_coreset(coreset_to_merge, k, eps, True)
+            merged_coreset = CoresetKSeg.compute_coreset(coreset_to_merge, k, eps, is_coreset=True)
         # case both of them are sets of points
         else:
-            merged_coreset = Coreset.build_coreset(np.vstack((a, b)), k, eps, False)
+            merged_coreset = CoresetKSeg.compute_coreset(np.vstack((a, b)), k, eps, is_coreset=False)
         return merged_coreset
 
 

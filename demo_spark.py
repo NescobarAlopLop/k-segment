@@ -25,12 +25,13 @@ csg_rounds  = 3 ### 0,100,5
 zloop       = 7 ### 1,50,5 trials=1
 run = {'spk': 1, 'rnd': 0} ###
 run['uni'] = 2 #uniform
-plot= {'dataset': 0, 'result': 0}
-inmem  = 8 #TODO: maintain inmem=0
+plot = {'dataset': 0, 'result': 0}
+inmem = 8  # TODO: maintain inmem=0
 xlabel0 = "#iterations "
-xlabel  = xlabel0 + ("   /  fxSpk%d inM%d  "%(not run['spk'], inmem))
+xlabel = xlabel0 + ("   /  fxSpk%d inM%d  "%(not run['spk'], inmem))
 testk = isinstance(k, string_types)
 testx = (xx is not fxpartitions)
+
 
 if __name__ == "__main__":
     def getData(iterator):
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     def readPointBatch(Int,iterator):
         return [(Int/2, [getData(iterator), None])]
 
-    def merge(a ,b):
+    def merge(a, b):
         points = np.vstack((a[0], b[0]))
         weights = None
         if a[1] is None and b[1] is not None:            a[1] = np.ones(a[0].shape[0])
