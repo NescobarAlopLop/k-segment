@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 __author__ = 'Ahmad Yasin & Anton Boyko'
 import numpy as np, pandas as pd, time, csv, string
-from cStringIO import StringIO
-import tree, do_kmeans, utils, graph #,spark_kmeans_python
+# from cStringIO import StringIO
+from io import StringIO
+from six import string_types
+import tree, do_kmeans, utils, graph, spark_kmeans_python
 from spark import tree
 from coreset import Coreset
 from weighted_kmeans import KMeans
@@ -26,7 +28,9 @@ run['uni'] = 2 #uniform
 plot= {'dataset': 0, 'result': 0}
 inmem  = 8 #TODO: maintain inmem=0
 xlabel0 = "#iterations "
-xlabel  = xlabel0 + ("   /  fxSpk%d inM%d  "%(not run['spk'], inmem)); testk = isinstance(k, basestring); testx = (xx is not fxpartitions)
+xlabel  = xlabel0 + ("   /  fxSpk%d inM%d  "%(not run['spk'], inmem))
+testk = isinstance(k, string_types)
+testx = (xx is not fxpartitions)
 
 if __name__ == "__main__":
     def getData(iterator):
@@ -94,13 +98,14 @@ if __name__ == "__main__":
     runtg.append(xlabel0)
     runtg.append('k='+str(k) + '; iStep='+str(iStep) + '; trials='+str(trials) + '; rounds='+str(rnds) + '; parts='+str(xx) + ';')
     runtg.append('coreset gen: size='+str(csize) + ';iStep='+str(csg_isteps) + ';rounds='+str(csg_rounds) + ';zloop='+str(zloop) )
-    runtag = string.join(runtg, '@'); print '\n\n' + runtag
+    runtag = string.join(runtg, '@'); print('\n\n' + runtag)
     total_time = time.time()
     if not testk: ref_cost, N = ref_kmeans(k)
     
     points_rdd00 = sc.textFile(infile, fxpartitions)
     points_rdd0 = points_rdd00.mapPartitions(parsePartition_for_cost).persist()
-    points_rdd1 = None; coreset_rdd = None;
+    points_rdd1 = None
+    coreset_rdd = None
     if not testx:
         points_rdd1 = sc.textFile(infile, xx).map(lambda line: np.array([float(x) for x in line.split(' ')])).persist()
         coreset_rdd = load_coreset().persist()
@@ -118,7 +123,7 @@ if __name__ == "__main__":
         return cost, time1, means1
 
     def custom_rng(n=1310000):
-        r = [];
+        r = []
         r.append(int(n * 0.0001))
         for i in range(1, 10):
             r.append(int(n * i* 0.001))
