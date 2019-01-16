@@ -225,7 +225,7 @@ def compute_one_segment_corset(P, is_coreset=False):
     return OneSegCoreset(repPoints=B, weight=w, SVt=SVt)
 
 
-def compute_piecewise_coreset(n, eps, s: Optional[None]):
+def compute_piecewise_coreset(n, eps):
     # TODO: provide proper s
     def s(index, points_number):
         return max(4.0 / float(index), 4.0 / (points_number - index + 1))
