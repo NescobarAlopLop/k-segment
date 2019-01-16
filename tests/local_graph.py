@@ -51,7 +51,7 @@ trails = 10
 """
 No tree.
 """
-test.run_test(k, test_range, trails, cset_kmeans_trials=10)
+# test.run_test(k, test_range, trails, cset_kmeans_trials=10)
 
 """
 Using `stream.m`:

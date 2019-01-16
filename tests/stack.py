@@ -18,7 +18,16 @@ class Stack(object):
         return self.items.pop()
 
     def top(self):
-        return self.items[len(self.items)-1]
+        return self.items[-1]
 
     def size(self):
+        return len(self.items)
+
+    def __str__(self):
+        return '{}'.format(self.items)
+
+    def __repr__(self):
+        return 'Coreset Stack'
+
+    def __len__(self):
         return len(self.items)
