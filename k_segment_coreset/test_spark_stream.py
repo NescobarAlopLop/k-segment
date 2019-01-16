@@ -1,4 +1,4 @@
-from CoresetKSeg import build_coreset_on_pyspark
+from CoresetKSeg import CoresetKSeg
 from utils_seg import gen_synthetic_graph
 import numpy as np
 from pyspark import SparkContext
@@ -17,13 +17,12 @@ def main():
     points = np.column_stack((np.arange(1, len(points) + 1), points[:]))
     aggregated_for_rdd = []
 
-
     for i in range(0, len(points), chunk_size):
         aggregated_for_rdd.append(points[i:i + chunk_size])
 
     data = sc.parallelize(aggregated_for_rdd)
 
-    all_coresets = data.map(lambda x: build_coreset_on_pyspark(x, k, eps)).collect()
+    all_coresets = data.map(lambda x: CoresetKSeg.compute_coreset(x, k, eps)).collect()
     sc.stop()
 
     print(all_coresets)
