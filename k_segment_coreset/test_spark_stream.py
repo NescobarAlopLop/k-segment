@@ -9,8 +9,8 @@ warnings.filterwarnings("ignore")
 def main():
     sc = SparkContext()
 
-    num_of_points = 50000
-    chunk_size = 10000
+    num_of_points = 500
+    chunk_size = 100
     k = 5
     eps = 0.4
     points = gen_synthetic_graph(n=num_of_points + 1, k=k, dim=1, deviation=0.01, max_diff=3)

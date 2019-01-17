@@ -6,16 +6,6 @@ import CoresetKSeg
 from stack import Stack
 import utils_seg
 import random
-from utils_seg import visualize_2d
-# from utils_seg import gen_synthetic_graph, load_csv_into_dataframe
-# import pandas as pd
-# from pyspark.streaming import StreamingContext
-# import unittest
-# import sys
-# import copy
-# from pyspark import SparkContext
-# import ksegment
-# from typing import Union
 
 
 StackItem = namedtuple("StackItem", "coreset level")
@@ -37,8 +27,10 @@ class CoresetStreamer(Thread):
         self.leaf_size = sample_size
 
     def _add_leaf(self, points, weights):
+        points = CoresetKSeg.CoresetKSeg.compute_coreset(data=points, k=self.k, eps=self.eps)
         if weights is None:
-            weights = np.ones((points.shape[0])).ravel()
+            # weights = np.ones((points.shape[0])).ravel()
+            weights = np.ones(len(points)).ravel()
         self._insert_into_tree(WeightedPointSet(points, weights))
 
     def _merge(self, pset1: WeightedPointSet, pset2: WeightedPointSet):
@@ -117,31 +109,16 @@ def main(path: str, col: int = 0):
     points = np.column_stack((np.arange(1, len(points) + 1), points[:]))
     k = 4
     eps = 0.3
-    stream = CoresetStreamer(CoresetKSeg.CoresetKSeg, sample_size=100, eps=eps, k=k, streaming_context=None)
+    stream = CoresetStreamer(CoresetKSeg.CoresetKSeg, sample_size=200, eps=eps, k=k, streaming_context=None)
     for chunk in batch(points, batch_size=70, random_size_chunks=False):
-        print(len(chunk))
+        # print(len(chunk))
         stream.add_points(chunk)
+        print("#"*60, "\n\t", stream)
     p_cset, w_cset = stream.get_unified_coreset()
     print(p_cset, w_cset)
-    visualize_2d(points, p_cset, k, eps, show=True)
     print(stream)
 
 
 if __name__ == '__main__':
-    # file_path = '/home/ge/k-segment/datasets/KO_no_date.csv'
-    file_path = '/home/ge/k-segment/datasets/bicriteria test case - coreset.csv'
+    file_path = '/home/ge/k-segment/datasets/KO_no_date.csv'
     main(file_path)
-    # if len(sys.argv) != 3:
-    #     print("Usage: network_wordcount.py <hostname> <port>", file=sys.stderr)
-    #     sys.exit(-1)
-    # sc = SparkContext(appName="PythonStreamingNetworkWordCount")
-    # ssc = StreamingContext(sc, batchDuration=1)
-    # streamer = CoresetStreamer(None, 100, 0.4, 4, ssc)
-    # try:
-    #     streamer.start()
-    # except (KeyboardInterrupt, EOFError, Exception) as e:
-    #     print("#"*80)
-    #     print(e)
-    #     streamer.join()
-    #     ssc.stop(stopSparkContext=True, stopGraceFully=True)
-    # ssc.awaitTerminationOrTimeout(timeout=100)
