@@ -151,7 +151,7 @@ def compute_total_mse(points, dividers, lines):
     :param points: input data points
     :param dividers: indexes of division of points into subsets
     :param lines: lines that describe each segment
-    :return: sum over mean squeared distance for each point to its best fit line
+    :return: sum over mean squared error for each point to its best fit line
     :type: float
     """
     mse = 0.0
@@ -159,6 +159,7 @@ def compute_total_mse(points, dividers, lines):
         segment = points[int(segment_begin):int(segment_end), :]
         best_fit_line = calc_best_fit_line_polyfit(segment)
         mse += sqrd_dist_sum(segment, best_fit_line)
+    mse /= len(points)
     return mse
 
 
