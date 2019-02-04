@@ -1,13 +1,16 @@
-from CoresetKSeg import CoresetKSeg
-from utils_seg import gen_synthetic_graph
+import warnings
+
 import numpy as np
 from pyspark import SparkContext
-import warnings
+
+import ksegment
+from CoresetKSeg import CoresetKSeg
+from utils_seg import gen_synthetic_graph
+
 warnings.filterwarnings("ignore")
 
 
 def main():
-    sc = SparkContext()
 
     num_of_points = 500
     chunk_size = 100
@@ -20,13 +23,17 @@ def main():
     for i in range(0, len(points), chunk_size):
         aggregated_for_rdd.append(points[i:i + chunk_size])
 
+    sc = SparkContext()
     data = sc.parallelize(aggregated_for_rdd)
 
     all_coresets = data.map(lambda x: CoresetKSeg.compute_coreset(x, k, eps)).collect()
     sc.stop()
-
+    tmp = []
+    for t in all_coresets:
+        tmp += t
+    dividers = ksegment.coreset_k_segment(tmp, k)
     print(all_coresets)
-    print(len(all_coresets))
+    print(dividers)
 
 
 if __name__ == "__main__":

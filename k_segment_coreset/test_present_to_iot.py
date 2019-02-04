@@ -1,10 +1,12 @@
-import numpy as np
 import unittest
+
 import matplotlib.pyplot as plt
+import numpy as np
+
 import CoresetKSeg
 import ksegment
-from utils_seg import load_csv_into_dataframe, visualize_2d, gen_synthetic_graph, calc_cost_dividers
 import test
+from utils_seg import load_csv_into_dataframe, visualize_2d, gen_synthetic_graph
 
 
 class KSegmentTest(unittest.TestCase):

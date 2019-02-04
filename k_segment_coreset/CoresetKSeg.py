@@ -1,12 +1,14 @@
-import numpy as np
 import math
+
+import numpy as np
+
 try:
     import utils_seg
     import ksegment
 except ImportError:
     from k_segment_coreset import utils_seg
     from k_segment_coreset import ksegment
-from typing import Union, List, Optional
+from typing import Union, List
 
 
 class OneSegCoreset:

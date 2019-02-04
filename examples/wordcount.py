@@ -19,8 +19,9 @@
 
 
 import threading
-from pyspark import SparkContext, SparkConf
+
 import numpy as np
+from pyspark import SparkContext, SparkConf
 
 
 def task(sc, i):
