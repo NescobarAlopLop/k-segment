@@ -1,7 +1,11 @@
 import numpy as np
 import math
-import utils_seg
-import ksegment
+try:
+    import utils_seg
+    import ksegment
+except ImportError:
+    from k_segment_coreset import utils_seg
+    from k_segment_coreset import ksegment
 from typing import Union, List, Optional
 
 
@@ -122,8 +126,8 @@ class CoresetKSeg(object):
                         Q = []
                     continue
                 T = Q[:-1]
-                C = compute_one_segment_corset(T, is_coreset)
-                g = utils_seg.calc_best_fit_line_polyfit(compute_one_segment_corset(np.asarray(T), is_coreset).repPoints)
+                C = compute_one_segment_coreset(T, is_coreset)
+                g = utils_seg.calc_best_fit_line_polyfit(compute_one_segment_coreset(np.asarray(T), is_coreset).repPoints)
                 if is_coreset:
                     b = T[0].b
                     e = T[-1].e
@@ -170,13 +174,13 @@ class CoresetKSeg(object):
 
 def one_seg_cost(points, is_coreset=False):
     if is_coreset:
-        one_segment_coreset = compute_one_segment_corset(points, is_coreset)
+        one_segment_coreset = compute_one_segment_coreset(points, is_coreset)
         return utils_seg.cost_best_fit_line_to_points(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight
     else:
         return utils_seg.cost_best_fit_line_to_points(points, is_coreset)
 
 
-def compute_one_segment_corset(P, is_coreset=False):
+def compute_one_segment_coreset(P, is_coreset=False):
     if len(P) < 2:
         return P[0].C
     if is_coreset:

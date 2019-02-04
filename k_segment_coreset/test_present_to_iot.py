@@ -28,7 +28,7 @@ class KSegmentTest(unittest.TestCase):
         :param eps:     epsilon error
         :param show:    show plots
         """
-        if not path:
+        if path is None:
             data = gen_synthetic_graph(n=400, k=k, dim=1, deviation=0.01, max_diff=3)
             # data = gen_synthetic_graph(n=400, k=k, dim=1, deviation=1, max_diff=2)
         else:
@@ -71,7 +71,7 @@ class KSegmentTest(unittest.TestCase):
         """
         run k-segmentation on random data with default values
         """
-        self.test_from_file(show=False)
+        self.test_from_file(n=12000, k=1000, show=True)
 
     def test_loop(self):
         """

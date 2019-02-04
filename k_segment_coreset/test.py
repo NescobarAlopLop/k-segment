@@ -95,9 +95,9 @@ class KSegmentTest(unittest.TestCase):
     #     P1 = P[:1000]
     #     P2 = P[1000:]
     #
-    #     C = Coreset.compute_one_segment_corset(P)
-    #     C1 = Coreset.compute_one_segment_corset(P1)
-    #     C2 = Coreset.compute_one_segment_corset(P2)
+    #     C = Coreset.compute_one_segment_coreset(P)
+    #     C1 = Coreset.compute_one_segment_coreset(P1)
+    #     C2 = Coreset.compute_one_segment_coreset(P2)
     #
     #     best_fit_line_P = utils.calc_best_fit_line(P)
     #     best_fit_line_C = utils.calc_best_fit_line(C.repPoints)
@@ -127,7 +127,7 @@ class KSegmentTest(unittest.TestCase):
 
         points = np.column_stack((np.arange(1, len(data) + 1), data[:]))
         points1 = points[:1000]
-        core1 = CoresetKSeg.compute_one_segment_corset(points1)
+        core1 = CoresetKSeg.compute_one_segment_coreset(points1)
 
         best_fit_line_points = utils_seg.calc_best_fit_line(points)
         best_fit_line_points1 = utils_seg.calc_best_fit_line(points1)
@@ -157,17 +157,17 @@ class KSegmentTest(unittest.TestCase):
     #     P3 = P[20:30]
     #     P4 = P[30:]
     #
-    #     C = Coreset.compute_one_segment_corset(P)
-    #     C1 = Coreset.compute_one_segment_corset(P1)
-    #     C2 = Coreset.compute_one_segment_corset(P2)
-    #     C3 = Coreset.compute_one_segment_corset(P3)
-    #     C4 = Coreset.compute_one_segment_corset(P4)
+    #     C = Coreset.compute_one_segment_coreset(P)
+    #     C1 = Coreset.compute_one_segment_coreset(P1)
+    #     C2 = Coreset.compute_one_segment_coreset(P2)
+    #     C3 = Coreset.compute_one_segment_coreset(P3)
+    #     C4 = Coreset.compute_one_segment_coreset(P4)
     #     C1_C2 = [C1,C2]
     #     C3_C4 = [C3,C4]
-    #     coreset_of_coresets1 = Coreset.compute_one_segment_corset(C1_C2, True)
-    #     coreset_of_coresets2 = Coreset.compute_one_segment_corset(C3_C4, True)
+    #     coreset_of_coresets1 = Coreset.compute_one_segment_coreset(C1_C2, True)
+    #     coreset_of_coresets2 = Coreset.compute_one_segment_coreset(C3_C4, True)
     #     coreset_of_coresetrs = [coreset_of_coresets1, coreset_of_coresets2]
-    #     coreset_of_coresets3 = Coreset.compute_one_segment_corset(coreset_of_coresetrs, True)
+    #     coreset_of_coresets3 = Coreset.compute_one_segment_coreset(coreset_of_coresetrs, True)
     #
     #     original_points_best_fit_line = utils.calc_best_fit_line(P)
     #     single_coreset_best_fit_line = utils.calc_best_fit_line(C.repPoints)

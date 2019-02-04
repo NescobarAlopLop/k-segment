@@ -1,11 +1,17 @@
 import numpy as np
-from k_segment_coreset.CoresetKSeg import CoresetKSeg
 from collections import namedtuple
 from threading import Thread, Event
-import CoresetKSeg
-from stack import Stack
-import utils_seg
 import random
+try:
+    import CoresetKSeg
+    import ksegment
+    from stack import Stack
+    import utils_seg
+except ImportError:
+    from k_segment_coreset import ksegment
+    from k_segment_coreset import CoresetKSeg
+    from k_segment_coreset.stack import Stack
+    from k_segment_coreset import utils_seg
 
 
 StackItem = namedtuple("StackItem", "coreset level")
@@ -113,10 +119,13 @@ def main(path: str, col: int = 0):
     for chunk in batch(points, batch_size=70, random_size_chunks=False):
         # print(len(chunk))
         stream.add_points(chunk)
-        print("#"*60, "\n\t", stream)
+        # print("#"*60, "\n\t", stream)
     p_cset, w_cset = stream.get_unified_coreset()
-    print(p_cset, w_cset)
+    # print(p_cset, w_cset)
     print(stream)
+    dividers = ksegment.coreset_k_segment(p_cset, k)
+    print("dividers", dividers)
+    # utils_seg.visualize_2d(points, p_cset, k, eps, show=True)
 
 
 if __name__ == '__main__':

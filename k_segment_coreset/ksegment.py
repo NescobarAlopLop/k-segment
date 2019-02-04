@@ -1,6 +1,10 @@
 import numpy as np
-import utils_seg
-import CoresetKSeg
+try:
+    import utils_seg
+    import CoresetKSeg
+except ImportError:
+    from k_segment_coreset import utils
+    from k_segment_coreset import CoresetKSeg
 
 
 class NodesInfo:
@@ -103,7 +107,7 @@ def calc_coreset_prep_dist(D):
             C = []
             for coreset in D[first_coreset:second_coreset+1]:
                 C.append(coreset)
-            coreset_of_coresets = CoresetKSeg.compute_one_segment_corset(C, True)
+            coreset_of_coresets = CoresetKSeg.compute_one_segment_coreset(C, True)
             best_fit_line = utils_seg.calc_best_fit_line_polyfit(coreset_of_coresets.repPoints, True)
             fitting_cost = utils_seg.sqrd_dist_sum(coreset_of_coresets.repPoints, best_fit_line)*coreset_of_coresets.weight
             prep_dist[first_coreset, second_coreset] = fitting_cost
