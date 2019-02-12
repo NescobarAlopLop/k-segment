@@ -3,7 +3,7 @@ try:
     import utils_seg
     import CoresetKSeg
 except ImportError:
-    from k_segment_coreset import utils
+    from k_segment_coreset import utils_seg
     from k_segment_coreset import CoresetKSeg
 
 
@@ -45,6 +45,7 @@ def update_node_info(nodes, prep, cur_n, next_n):
                 nodes.info[next_n, 1, index] = cur_n
 
 
+# Floyd-Warshall's Algorithm
 def calc_partitions(prep_dist, n, k):
     nodes = NodesInfo(n, k)
     for i in range(n):
