@@ -30,9 +30,12 @@
 % Document
 \begin{document}
 
-                        \section{Pseudo-code}
+
+    \section{Pseudo-code}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \(f\) is a function which returns for each \(f(t_i)\) its approximation to mean
+
+
 \begin{algorithm}
 \SetKwInOut{Input}{Input}
 \SetKwInOut{Output}{Output}
@@ -40,10 +43,9 @@
 \Input{A set $P \subseteq \mathbb{R}^{d}$, $k \in [2, n/12 + 1]$ number of segments, $depth$ of segmentation, $cost(line, points)$ cost function}
 \Output{An (O($\log n$),O($\log n$))-approximation to the $k$ segment mean of $P$.}
 
+$P=\{(1,P_1),\cdots,(n, P_n)\}$     \tcp{ index (enumerate) input data points}
+
 \While{$|P| \ge 2k + 1$}{
-
-    $P=\{(t_1,P_1),\cdots,(t_n, P_n)\}$     \tcp{ index (enumerate) input data points}
-
     Partition $P$ into $4k$ subsets, such that for every $i \in [4k - 1]$:
         (i) $|\{t|(t,p) \in P_i\}| = \lfloor \frac{m}{4k}\rfloor$, and (ii) if $(t,p) \in P_i$ and $(t', p') \in P_{i+1}$ then $t \leq t'$.
 
@@ -65,8 +67,9 @@
 }
 \textbf{return} $f$\;
 
-\caption{Bicriteria($P$, $k$, $depth$)}
+\caption{Bicriteria($P$, $k$, $depth$, $cost$)}
 \end{algorithm}
+
 
 \begin{itemize}
   \item $depth$ variable defines how deep into the data structure bi-criteria should run,
