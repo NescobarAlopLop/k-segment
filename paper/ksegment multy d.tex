@@ -1,0 +1,86 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage{amsmath}    % need for sub-equations
+\usepackage{graphicx}   % need for figures
+\usepackage{verbatim}   % useful for program listings
+\usepackage{color}      % use if color is used in text
+\usepackage{subfigure}  % use for side-by-side figures
+\usepackage{hyperref}   % use for hypertext links, including those to external documents and URLs
+\usepackage{amssymb}
+\usepackage[linesnumbered,ruled]{algorithm2e}
+% \usepackage[legalpaper, portrait, margin=1.5in]{geometry}
+
+
+% don't need the following. simply use defaults
+\setlength{\baselineskip}{16.0pt}    % 16 pt usual spacing between lines
+\setlength{\parskip}{3pt plus 2pt}
+\setlength{\parindent}{10pt}
+\setlength{\oddsidemargin}{0.5cm}
+\setlength{\evensidemargin}{0.5cm}
+\setlength{\marginparsep}{0.75cm}
+\setlength{\marginparwidth}{1.5cm}
+\setlength{\marginparpush}{1.0cm}
+\setlength{\textwidth}{160mm}
+
+%\begin{comment}
+\pagestyle{empty} % use if page numbers not wanted
+%\end{comment}
+
+
+% Document
+\begin{document}
+
+                        \section{Pseudo-code}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\(f\) is a function which returns for each \(f(t_i)\) its approximation to mean
+\begin{algorithm}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+
+\Input{A set $P \subseteq \mathbb{R}^{d}$, $k \in [2, n/12 + 1]$ number of segments, $depth$ of segmentation, $cost(line, points)$ cost function}
+\Output{An (O($\log n$),O($\log n$))-approximation to the $k$ segment mean of $P$.}
+
+\While{$|P| \ge 2k + 1$}{
+
+    $P=\{(t_1,P_1),\cdots,(t_n, P_n)\}$     \tcp{ index (enumerate) input data points}
+
+    Partition $P$ into $4k$ subsets, such that for every $i \in [4k - 1]$:
+        (i) $|\{t|(t,p) \in P_i\}| = \lfloor \frac{m}{4k}\rfloor$, and (ii) if $(t,p) \in P_i$ and $(t', p') \in P_{i+1}$ then $t \leq t'$.
+
+    \For{$i=1$ to $4k$}{
+        \uIf{$depth > 0$}{
+            $f_i :=$ Bicriteria($P_i$, $k$, $depth-1$)\\
+            $c_i := cost(f_i, P_i)$
+        }
+        \uElse{
+            $g_i :=$ 2-approximation to 1-segment mean of $P_i$\\
+            $c_i := cost(g_i, P_i)$
+        }
+        Set $Q$ to a union of $k + 1$ signals. $P_i$ with smallest value $c_i$ among $i \in [4k]$\\
+        $P = P \setminus Q$\\
+        \For{$t$ in $Q$}{
+            $f(t)=c_t$      \tcp{update estimation price for each index $t$ in $Q$}
+        }
+    }
+}
+\textbf{return} $f$\;
+
+\caption{Bicriteria($P$, $k$, $depth$)}
+\end{algorithm}
+
+\begin{itemize}
+  \item $depth$ variable defines how deep into the data structure bi-criteria should run,
+  for example for 2d gray-scale image $depth = 1$ will stop at "line level" and run bi-criteria
+  on a line. Return the cost of the partition to the previous "depth", then compare and find
+  which line segment were cheaper and so on.
+
+  \item I need to think of a data-structure to save all the useful results of Bicriteria runs.
+  $f$ is a segment/interval tree.
+
+  \item Balanced Partition should be very similar to this.
+
+  \item Also for multiprocessor environment the part inside of a for loop on line 4 maybe mapped into 4k jobs and results reduced into $f$.
+\end{itemize}
+
+
+\end{document}
