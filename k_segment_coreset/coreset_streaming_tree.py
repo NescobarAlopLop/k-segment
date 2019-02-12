@@ -18,7 +18,6 @@ except ImportError:
     from k_segment_coreset import CoresetKSeg
     from k_segment_coreset.stack import Stack
     from k_segment_coreset import utils_seg
-warnings.filterwarnings("ignore")
 
 
 StackItem = namedtuple("StackItem", "coreset level")

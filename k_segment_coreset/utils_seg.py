@@ -7,6 +7,9 @@ import pandas as pd
 
 import ksegment
 
+import warnings
+warnings.simplefilter('ignore', np.RankWarning)
+
 
 # import SparkContext
 # from pyspark import SparkConf, SparkContext
