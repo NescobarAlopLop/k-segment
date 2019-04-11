@@ -10,8 +10,8 @@ from k_segment_coreset.utils_seg import calc_best_fit_line_polyfit, sqrd_dist_su
 class Partitioner:
     def __init__(self, data):
         self.Item = namedtuple('Item', ['cost', 'P_i', 'g_i'])
-        self.size = len(data)
         self.enumerated_data = list(enumerate(data))
+        self.size = len(self.enumerated_data)
         # print("list(enumerate(data)): ", list(enumerate(data)))
         self.partitioned_data = []
         self.output = []
