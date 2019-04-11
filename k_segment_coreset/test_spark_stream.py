@@ -24,16 +24,20 @@ def main():
         aggregated_for_rdd.append(points[i:i + chunk_size])
 
     sc = SparkContext()
-    data = sc.parallelize(aggregated_for_rdd)
+    # data = sc.parallelize(aggregated_for_rdd)
+    data = sc.parallelize(aggregated_for_rdd, 4)
 
+    def func(x):
+        print(x)
     all_coresets = data.map(lambda x: CoresetKSeg.compute_coreset(x, k, eps)).collect()
+    # all_coresets = data.mapPartitions(lambda x: func(x))
     sc.stop()
-    tmp = []
-    for t in all_coresets:
-        tmp += t
-    dividers = ksegment.coreset_k_segment(tmp, k)
-    print(all_coresets)
-    print(dividers)
+    # tmp = []
+    # for t in all_coresets:
+    #     tmp += t
+    # dividers = ksegment.coreset_k_segment(tmp, k)
+    # print(all_coresets)
+    # print(dividers)
 
 
 if __name__ == "__main__":
