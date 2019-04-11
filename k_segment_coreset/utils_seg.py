@@ -5,7 +5,7 @@ import mpl_toolkits.mplot3d as m3d
 import numpy as np
 import pandas as pd
 
-import ksegment
+from k_segment_coreset import ksegment
 
 import warnings
 warnings.simplefilter('ignore', np.RankWarning)

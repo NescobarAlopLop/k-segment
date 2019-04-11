@@ -1,12 +1,10 @@
 import numpy as np
-import ksegment
-import CoresetKSeg
-from CoresetKSeg import CoresetKSeg
+
 import unittest
 import matplotlib.pyplot as plt
-from utils_seg import load_csv_into_dataframe, visualize_2d
+
 from k_segment_implementation.Partitioner import Partitioner
-from utils_seg import calc_best_fit_line_polyfit, sqrd_dist_sum, gen_synthetic_graph
+from k_segment_coreset.utils_seg import calc_best_fit_line_polyfit, sqrd_dist_sum, gen_synthetic_graph
 
 
 def load_csv_file(path, n_rows=None):
@@ -24,10 +22,9 @@ class PartitionerTest(unittest.TestCase):
         self.assertTrue(True)
         plt.show()
 
-
     def test_init(self):
 
-        data = gen_synthetic_graph(n=200, k=1, deviation=0, dim=1)
+        data = gen_synthetic_graph(n=200, k=2, deviation=0, dim=1)
         # data = np.arange(200)
         data = np.column_stack((np.arange(1, len(data) + 1), data[:]))
 
@@ -40,3 +37,5 @@ class PartitionerTest(unittest.TestCase):
         print("{:0.1f}".format(cost))
 
         p = Partitioner(data)
+        p.partition(k=2)
+        p.calculate_cost_for_group(0)

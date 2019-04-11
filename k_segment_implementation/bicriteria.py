@@ -26,6 +26,10 @@ def main(argv):
     partitioner.remove_item(2)
     #print(partitioned_data)
     #print(partitioner.enumerated_data)
+
+    partitioner = Partitioner(data)
+    partitioner.partition(k)
+    partitioner.calculate_cost_for_group(1)
     return 0
 
 
