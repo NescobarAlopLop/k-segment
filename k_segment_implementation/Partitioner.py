@@ -3,6 +3,14 @@
 
 from collections import namedtuple
 from numpy import array_split
+from typing import List, Optional
+
+
+class Divs():
+    def __init__(self, b: int, e: int, sub_divs: Optional[List["Divs"]] = None):
+        self.b = b
+        self.e = e
+        self.sub_divs = sub_divs
 
 
 class Partitioner:
