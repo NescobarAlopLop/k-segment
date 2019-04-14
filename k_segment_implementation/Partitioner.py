@@ -2,9 +2,19 @@
 # -*- coding:utf-8 -*-
 
 from collections import namedtuple
+
 import numpy as np
 
 from k_segment_coreset.utils_seg import calc_best_fit_line_polyfit, sqrd_dist_sum
+
+from typing import List, Optional
+
+
+class Divs():
+    def __init__(self, b: int, e: int, sub_divs: Optional[List["Divs"]] = None):
+        self.b = b
+        self.e = e
+        self.sub_divs = sub_divs
 
 
 class Partitioner:
