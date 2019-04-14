@@ -30,7 +30,7 @@ def best_fit_line_cost_weighted(points, weight, is_coreset=False):
     return sqrd_dist_sum_weighted(points, best_fit_line, weight)
 
 
-def calc_best_fit_line(points):
+def calc_best_fit_line(points: np.array) -> np.array:
     """
     calc_best_fit_line -
         input - set of points
@@ -196,6 +196,7 @@ def visualize_2d(points, coreset, k, eps, show=False):
     for xc in dividers:
         plt.axvline(x=xc, linestyle='--', label='divider at {}'.format(xc))
     segments_lines = compute_lines_for_points_split_by_dividers(points, dividers)
+    # for idx, line  in enumerate(segments_lines):
     for line, idx in zip(segments_lines, range(len(segments_lines))):
         lint_pts_arr = np.asarray(line)
         plt.plot(*lint_pts_arr.T, label=str(idx), alpha=0.4, linestyle='-', linewidth=2.0)
