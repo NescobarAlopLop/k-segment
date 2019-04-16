@@ -13,14 +13,13 @@ def main(argv):
     # size = argv[1]
     # k = argv[2]
 
-    size = 64
-    k = 4
+    size = 256
+    k = 2
 
     data = generate_data_array(size)
-    data = np.reshape(data, (8, 8))
+    data = np.reshape(data, (8, 32))
     print(data)
-    partitioner = Partitioner(data, 0)
-    partitioned_data = partitioner.partition(k, 0)
+    #partitioned_data = partitioner.partition(k, 1)
 
     #partitioner.update_cost_for_group(2, 1)
     #partitioner.update_cost_for_group(4, 10)
@@ -30,8 +29,9 @@ def main(argv):
     #print(partitioned_data)
     #print(partitioner.enumerated_data)
 
-    partitioner = Partitioner(data, 0)
-    partitioner.partition(k, 0)
+    partitioner = Partitioner(data, k, depth=1)
+    print(partitioner.dividers)
+    #partitioner.partition(k, 0)
     #partitioner.calculate_cost_for_group(1)
     return 0
 
