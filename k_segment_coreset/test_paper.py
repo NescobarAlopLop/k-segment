@@ -1,10 +1,12 @@
-import numpy as np
-from utils_seg import gen_synthetic_graph
-import ksegment
-import CoresetKSeg
-from CoresetKSeg import CoresetKSeg
 import unittest
+
 import matplotlib.pyplot as plt
+import numpy as np
+
+import CoresetKSeg
+import ksegment
+from CoresetKSeg import CoresetKSeg
+from utils_seg import gen_synthetic_graph
 from utils_seg import load_csv_into_dataframe, visualize_2d
 
 
