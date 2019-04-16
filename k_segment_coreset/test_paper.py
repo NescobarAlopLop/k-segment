@@ -28,10 +28,12 @@ class KSegmentTest(unittest.TestCase):
         data = gen_synthetic_graph(n, k, 1)
         data = np.column_stack((np.arange(1, len(data) + 1), data[:]))
 
-        coreset = CoresetKSeg(data, k, epsilon, add_index_col=False)
+        coreset = CoresetKSeg.compute_coreset(data, k, epsilon)
+        coreset_points = ksegment.get_coreset_points(coreset)
+
         print("original data len\t{}\ncoreset points len:\t{}".format(len(data), len(coreset)))
-        print(len(data), len(coreset))
-        self.assertGreater(len(data), len(coreset))
+        print(len(data), len(coreset_points))
+        self.assertGreaterEqual(len(data), len(coreset_points))
 
     def test_loop(self):
         n = 800
@@ -48,9 +50,12 @@ class KSegmentTest(unittest.TestCase):
 
         k = 4
         eps = 0.5
-        k_eps_coreset = CoresetKSeg(data, k, eps, add_index_col=False)
-        self.assertGreater(len(data), len(k_eps_coreset))
-        visualize_2d(data, k_eps_coreset.coreset, k, eps, show=False)
+
+        k_eps_coreset = CoresetKSeg.compute_coreset(data, k, eps)
+        k_eps_coreset_points = ksegment.get_coreset_points(k_eps_coreset)
+        self.assertGreaterEqual(len(data), len(k_eps_coreset_points))
+
+        visualize_2d(data, k_eps_coreset, k, eps, show=False)
 
     def test_coreset_k_seg_init(self):
         data = load_csv_into_dataframe("/home/ge/k-segment/datasets/KO_no_date.csv").values[600:800]
@@ -58,10 +63,10 @@ class KSegmentTest(unittest.TestCase):
 
         k = 4
         eps = 0.3
-        k_eps_coreset = CoresetKSeg(data, k, eps, add_index_col=False)
-        self.assertGreater(len(data), len(k_eps_coreset))
-
-        visualize_2d(data, k_eps_coreset.coreset, k, eps, show=False)
+        k_eps_coreset = CoresetKSeg.compute_coreset(data, k, eps)
+        k_eps_coreset_points = ksegment.get_coreset_points(k_eps_coreset)
+        self.assertGreater(len(data), len(k_eps_coreset_points))
+        visualize_2d(data, k_eps_coreset, k, eps, show=False)
 
     def test_coreset_k_seg_call(self):
         data = load_csv_into_dataframe("/home/ge/k-segment/datasets/KO_no_date.csv").values[600:800]
@@ -69,7 +74,7 @@ class KSegmentTest(unittest.TestCase):
 
         k = 4
         eps = 0.3
-        k_eps_coreset = CoresetKSeg(data, k, eps, add_index_col=False)
-        k_eps_coreset(data)
-        self.assertGreater(len(data), len(k_eps_coreset))
-        visualize_2d(data, k_eps_coreset.coreset, k, eps, show=False)
+        k_eps_coreset = CoresetKSeg.compute_coreset(data, k, eps)
+        k_eps_coreset_points = ksegment.get_coreset_points(k_eps_coreset)
+        self.assertGreater(len(data), len(k_eps_coreset_points))
+        visualize_2d(data, k_eps_coreset, k, eps, show=False)
