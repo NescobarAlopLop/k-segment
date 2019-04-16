@@ -5,7 +5,7 @@ import sys
 
 import numpy as np
 from utils import generate_data_array
-from Partitioner import Partitioner
+from Dividers import Dividers
 
 
 def main(argv):
@@ -29,10 +29,6 @@ def main(argv):
     #print(partitioned_data)
     #print(partitioner.enumerated_data)
 
-    partitioner = Partitioner(data, k, depth=1)
-    print(partitioner.dividers)
-    #partitioner.partition(k, 0)
-    #partitioner.calculate_cost_for_group(1)
     return 0
 
 
