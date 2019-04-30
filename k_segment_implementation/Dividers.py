@@ -16,19 +16,21 @@ class Dividers:
     # __slots__ = "cost", "begin", "end", "approx_coefficients", "sub_divs"
 
     def __init__(self, begin: int, end: int, sub_divs: Optional[List["Dividers"]] = None,
-                 cost: Optional[float] = None, approx_coefficients: Optional[List[int]] = None):
+                 cost: Optional[float] = None, approx_coefficients: Optional[List[int]] = None,
+                 repr_idx: Optional[List[int]] = None):
         self.cost = cost
         self.begin = begin
         self.end = end
         self.approx_coefficients = approx_coefficients
         self.sub_divs = sub_divs
+        self.repr_idx = repr_idx
 
     def __lt__(self, other):
         return self.cost < other.cost
 
     def __repr__(self):
-        return "Dividers({}, {}, {}, {}, {})".format(self.cost, self.begin, self.end,
-                                                     self.approx_coefficients, self.sub_divs)
+        return "Dividers({}, {}, {}, {}, {}, {})".format(self.cost, self.begin, self.end,
+                                                     self.approx_coefficients, self.sub_divs, self.repr_idx)
 
     def get_dividers_point_pairs_for_drawing(self):
         log.debug('{}, {}, {}'.format(this_file_name(), this_func_name(), inspect.currentframe().f_lineno))
