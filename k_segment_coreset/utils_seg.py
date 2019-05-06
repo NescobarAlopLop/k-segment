@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -5,9 +6,8 @@ import mpl_toolkits.mplot3d as m3d
 import numpy as np
 import pandas as pd
 
-import ksegment
+from k_segment_coreset import ksegment
 
-import warnings
 warnings.simplefilter('ignore', np.RankWarning)
 
 
@@ -213,6 +213,53 @@ def visualize_2d(points, coreset, k, eps, show=False):
     # plt.clf()
 
 
+def vis_with_svd(points, coreset, k, eps, show=False):
+    """
+    Visualizes results on a plot, scattering all input points with overlay of deviders, best fit lines
+    :param points: input data points
+    :param coreset: coreset of points
+    :param k: number of segments
+    :param eps: error (0 < eps < 1)
+    :param show: if show figure window
+    :return: void
+    """
+    coreset_points = ksegment.get_coreset_points(coreset)
+
+    plt.figure(figsize=(19, 9), dpi=200)
+    plt.grid(True)
+    plt.xlabel('time')
+    plt.plot(points[:, 0], points[:, 1])
+    plt.scatter(points[:, 0], points[:, 1], s=3)
+    plt.plot(coreset_points[:, 0], coreset_points[:, 1])
+    plt.scatter(coreset_points[:, 0], coreset_points[:, 1], s=10, c='r', alpha=0.3)
+    # i = 0
+    # for c in coreset:
+    #     line_pts_array = np.asarray(c.g)
+    #     plt.plot(c.g, label='[{}] b = {}, e = {}'.format(i, c.b, c.e))
+    #     # plt.plot(*line_pts_array.T, label='[{}] b = {}, e = {}'.format(i, c.b, c.e))
+    #     i += 1
+
+    dividers = ksegment.coreset_k_segment(coreset, k)
+    for xc in dividers:
+        plt.axvline(x=xc, linestyle='--', label='divider at {}'.format(xc))
+    # segments_lines = compute_lines_for_points_split_by_dividers(points, dividers)
+    # # for idx, line  in enumerate(segments_lines):
+    # for line, idx in zip(segments_lines, range(len(segments_lines))):
+    #     lint_pts_arr = np.asarray(line)
+    #     plt.plot(*lint_pts_arr.T, label=str(idx), alpha=0.4, linestyle='-', linewidth=2.0)
+    # total_mse = compute_total_mse(points, dividers, segments_lines)
+    #
+    # plt.suptitle('data size {}, coreset size {}, k = {}, error = {:<.2f}% mse for all points = {:<.3f}'
+    #              .format(len(points), len(coreset), len(segments_lines), eps * 100, total_mse))
+    # plt.legend()
+    # plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))
+    # print("saving image: {:%Y_%m_%d_%s}.png".format(datetime.now()))
+    # print("original data len\t{}\ncoreset points len:\t{}".format(len(points), len(coreset)))
+    if show:
+        plt.show()
+    # plt.clf()
+
+
 def is_unitary(m):
     return np.allclose(np.eye(len(m)), m.dot(m.T.conj()))
 
@@ -259,3 +306,58 @@ def load_csv_into_dataframe(path: str) -> pd.DataFrame:
         engine='python'
     )
     return df
+
+
+def best_fit_line_and_cost(data: np.ndarray, row_idxs: np.ndarray = None):
+    if row_idxs is None:
+        row_idxs = np.arange(len(data))
+    np.insert(data, 0, values=1, axis=1)
+    # Perturb with some Gaussian noise
+    # data += np.random.normal(size=data.shape) * 0.4
+
+    # Calculate the mean of the points, i.e. the 'center' of the cloud
+    datamean = data[row_idxs].mean(axis=0)
+
+    # Do an SVD on the mean-centered data.
+    uu, dd, vv = np.linalg.svd(data[row_idxs] - datamean)
+
+    # Now vv[0] contains the first principal component, i.e. the direction
+    # vector of the 'best fit' line in the least squares sense.
+    return vv[0], dd[0]
+
+
+def plot_data_vs_svd_line_3d(data, coeff, begin: int = 0, end: int = 10):
+    # Calculate the mean of the points, i.e. the 'center' of the cloud
+    datamean = data.mean(axis=0)
+    # Now generate some points along this best fit line, for plotting.
+
+    # I use -7, 7 since the spread of the data is roughly 14
+    # and we want it to have mean 0 (like the points we did
+    # the svd on). Also, it's a straight line, so we only need 2 points.
+    linepts = coeff * np.mgrid[begin:end:2j][:,
+                      np.newaxis]  # create array starts with a, ends with b, with 2 equally spaced points
+    linepts2 = coeff * np.array([begin, end])[:, np.newaxis]
+    print(linepts)
+    print(linepts2)
+    # shift by the mean to get the line in the right place
+    linepts += datamean
+    linepts2 += datamean
+    print(linepts)
+    print(linepts2)
+
+    if data.shape[1] == 2:
+        plt.figure(figsize=(16, 9), dpi=200)
+        plt.grid(True)
+        plt.xlabel('time')
+        plt.plot(*linepts.T, color='red')
+        plt.scatter(*data.T, s=30)
+    else:
+        # Verify that everything looks right.
+        ax = m3d.Axes3D(plt.figure(figsize=(16, 9), dpi=100))
+        ax.scatter3D(*data.T, s=15, marker='o')
+        ax.view_init(elev=89.9, azim=-90.1)
+        ax.plot3D(*linepts.T, color='red')
+        ax.plot3D(*linepts2.T, color='blue')
+        ax.scatter3D(*linepts.T, s=20, marker='x')
+        ax.scatter3D(*linepts2.T, s=20, marker='+')
+    # plt.show()
