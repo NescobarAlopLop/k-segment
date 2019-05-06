@@ -8,7 +8,6 @@ import pandas as pd
 
 from k_segment_coreset import ksegment
 
-import warnings
 warnings.simplefilter('ignore', np.RankWarning)
 
 
