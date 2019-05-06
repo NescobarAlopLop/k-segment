@@ -9,7 +9,7 @@ try:
     from utils import generate_data_array
 except ImportError:
     from k_segment_implementation.utils import generate_data_array
-from Dividers import Dividers
+from Dividers import Dividers, get_dividers_point_pairs_for_drawing
 from k_segment_coreset.utils_seg import calc_best_fit_line_polyfit, sqrd_dist_sum
 
 
@@ -103,8 +103,7 @@ def main(argv):
     # data2 = np.vstack((data2,data2))
     _, _, divs = bicriteria(data2, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
     print('#' * 60)
-    for div in divs:
-        print(div.get_dividers_point_pairs_for_drawing())
+    print(get_dividers_point_pairs_for_drawing(divs))
     print(data)
 
     return 0
