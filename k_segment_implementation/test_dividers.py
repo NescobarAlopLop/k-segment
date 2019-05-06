@@ -3,50 +3,41 @@
 
 import unittest
 from Dividers import Dividers
+from Dividers import get_dividers_point_pairs_for_drawing
 
 
 class DividersTest(unittest.TestCase):
 
     def setUp(self):
-        begin = 0
-        end = 5
         sub_divs_inner = [Dividers(0, 6), Dividers(7, 9)]
-        sub_divs = [Dividers(0, 4, sub_divs_inner), Dividers(5, 9, sub_divs_inner)]
-        self.dividers = Dividers(begin, end, sub_divs)
+        self.dividers = [Dividers(0, 4, sub_divs_inner), Dividers(5, 9, sub_divs_inner)]
 
     def test_init(self):
-        self.assertEqual(self.dividers.begin, 0)
-        self.assertEqual(self.dividers.end, 5)
-        self.assertEqual(self.dividers.sub_divs[0].begin, 0)
-        self.assertEqual(self.dividers.sub_divs[0].end, 4)
-        self.assertEqual(self.dividers.sub_divs[1].begin, 5)
-        self.assertEqual(self.dividers.sub_divs[1].end, 9)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[0].begin, 0)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[0].end, 6)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[1].begin, 7)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[1].end, 9)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[0].begin, 0)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[0].end, 6)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[1].begin, 7)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[1].end, 9)
-        self.assertEqual(self.dividers.cost, None)
-        self.assertEqual(self.dividers.sub_divs[0].cost, None)
-        self.assertEqual(self.dividers.sub_divs[1].cost, None)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[0].cost, None)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[1].cost, None)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[0].cost, None)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[1].cost, None)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[0].sub_divs, None)
-        self.assertEqual(self.dividers.sub_divs[0].sub_divs[1].sub_divs, None)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[0].sub_divs, None)
-        self.assertEqual(self.dividers.sub_divs[1].sub_divs[1].sub_divs, None)
+        self.assertEqual(self.dividers[0].begin, 0)
+        self.assertEqual(self.dividers[0].end, 4)
+        self.assertEqual(self.dividers[1].begin, 5)
+        self.assertEqual(self.dividers[1].end, 9)
+        self.assertEqual(self.dividers[0].sub_divs[0].begin, 0)
+        self.assertEqual(self.dividers[0].sub_divs[0].end, 6)
+        self.assertEqual(self.dividers[0].sub_divs[1].begin, 7)
+        self.assertEqual(self.dividers[0].sub_divs[1].end, 9)
+        self.assertEqual(self.dividers[1].sub_divs[0].begin, 0)
+        self.assertEqual(self.dividers[1].sub_divs[0].end, 6)
+        self.assertEqual(self.dividers[1].sub_divs[1].begin, 7)
+        self.assertEqual(self.dividers[1].sub_divs[1].end, 9)
+        self.assertEqual(self.dividers[0].cost, None)
+        self.assertEqual(self.dividers[1].cost, None)
+        self.assertEqual(self.dividers[0].sub_divs[0].cost, None)
+        self.assertEqual(self.dividers[0].sub_divs[1].cost, None)
+        self.assertEqual(self.dividers[1].sub_divs[0].cost, None)
+        self.assertEqual(self.dividers[1].sub_divs[1].cost, None)
 
     def test_update_cost(self):
-        self.dividers.update_cost(0.56793)
-        self.assertEqual(self.dividers.cost, 0.56793)
+        self.dividers[0].update_cost(0.56793)
+        self.assertEqual(self.dividers[0].cost, 0.56793)
 
     def test_get_dividers_point_pairs_for_drawing(self):
-        dividers_points = self.dividers.get_dividers_point_pairs_for_drawing()
+        dividers_points = get_dividers_point_pairs_for_drawing(self.dividers)
         self.assertEqual(len(dividers_points), 16)
         self.assertEqual(dividers_points,
                          [((0, 0), (0, 6)), ((4, 0), (4, 6)), ((0, 0), (4, 0)), ((0, 6), (4, 6)),
