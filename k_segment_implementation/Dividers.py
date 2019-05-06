@@ -26,6 +26,8 @@ class Dividers:
         self.repr_idx = repr_idx
 
     def __lt__(self, other):
+        if self.cost is None:
+            print("found your error case")
         return self.cost < other.cost
 
     def __repr__(self):

@@ -167,12 +167,6 @@ class CoresetKSeg(object):
     def __repr__(self):
         return "KSegCoreset size = {}, for k = {}, eps = {:<2}".format(len(self.coreset), self.k, self.eps)
 
-    def __str__(self):
-        pass
-
-    def __add__(self, other):
-        pass
-
 
 def one_seg_cost(points, is_coreset=False):
     if is_coreset:
