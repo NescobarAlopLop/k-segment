@@ -352,11 +352,14 @@ def plot_data_vs_svd_line_3d(data, coeff, begin: int = 0, end: int = 10):
     print(linepts2)
 
     if data.shape[1] == 2:
-        plt.figure(figsize=(16, 9), dpi=200)
+        plt.figure()#(figsize=(16, 9), dpi=200)
         plt.grid(True)
         plt.xlabel('time')
         plt.plot(*linepts.T, color='red')
+        plt.plot(*linepts2.T, color='green')
         plt.scatter(*data.T, s=30)
+        plt.scatter(*linepts.T, s=40)
+        plt.scatter(*linepts2.T, s=50)
     else:
         # Verify that everything looks right.
         ax = m3d.Axes3D(plt.figure(figsize=(16, 9), dpi=100))

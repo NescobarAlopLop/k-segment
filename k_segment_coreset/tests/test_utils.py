@@ -35,4 +35,4 @@ class UtilsTest(unittest.TestCase):
         idxs = np.arange(len(data1))
         coeff, cost = utils_seg.best_fit_line_and_cost(data1, idxs)
         print("coeff: {}, cost: {}".format(coeff, cost))
-        utils_seg.plot_data_vs_svd_line_3d(data1, coeff, -2, 9)
+        utils_seg.plot_data_vs_svd_line_3d(data1, coeff, 10, 50)
