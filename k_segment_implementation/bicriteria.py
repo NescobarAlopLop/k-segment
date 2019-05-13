@@ -26,15 +26,16 @@ def bicriteria(data, k, depth, cost_function, approximation_function):
             tmp = []
             print("row indices: ", row_indices)
             for indices in row_indices:
-                # print("data: ", data)
-                print("data[indices, :].T: ", data[indices, :].T)
-                # data = np.column_stack((np.arange(1, len(data) + 1), data[:]))
-                g_i, c_i, sub_divs = bicriteria(data[indices, :].T, k, depth - 1, cost_function, approximation_function)
-                print("g_i, c_i: ", g_i, c_i)
-                begin = indices[0]
-                end = indices[-1]
-                dividers = Dividers(begin, end, sub_divs, c_i, g_i, indices)
-                tmp.append(dividers)
+                if len(indices) > 0:
+                    # print("data: ", data)
+                    print("data[indices, :].T: ", data[indices, :].T)
+                    # data = np.column_stack((np.arange(1, len(data) + 1), data[:]))
+                    g_i, c_i, sub_divs = bicriteria(data[indices, :].T, k, depth - 1, cost_function, approximation_function)
+                    print("g_i, c_i: ", g_i, c_i)
+                    begin = indices[0]
+                    end = indices[-1]
+                    dividers = Dividers(begin, end, sub_divs, c_i, g_i, indices)
+                    tmp.append(dividers)
 
             n_best = heapq.nsmallest(k + 1, tmp)
             output.extend(n_best)
@@ -102,20 +103,20 @@ def main(argv):
             [10,10,10,13,10,15,10,12,10,10,10,12,10,10,10,11,10,11,10,14,10,13,10,16],]
     data2 = np.array(data2)
 
-    # data2 = np.column_stack((np.arange(1, len(data2) + 1), data2[:]))
-    # data2 = np.vstack((data2,data2))
+    data2 = np.column_stack((np.arange(1, len(data2) + 1), data2[:]))
+    data2 = np.vstack((data2,data2))
     _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
     print('#' * 60)
 
     points = get_dividers_point_pairs_for_drawing(divs)
     print(points)
     print('#' * 60)
-    # img = io.imread('colour_grid.png', as_gray=True)
-    # data3 = np.array(img)
-    # _, _, divs3 = bicriteria(data3, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
-    # points3 = get_dividers_point_pairs_for_drawing(divs3)
-    # print(points3)
-    # print('#' * 60)
+    img = io.imread('colour_grid.png', as_gray=True)
+    data3 = np.array(img)
+    _, _, divs3 = bicriteria(data3, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+    points3 = get_dividers_point_pairs_for_drawing(divs3)
+    print(points3)
+    print('#' * 60)
 
     return 0
 
