@@ -358,8 +358,8 @@ def plot_data_vs_svd_line_3d(data, coeff, begin: int = 0, end: int = 10):
         plt.plot(*linepts.T, color='red')
         plt.plot(*linepts2.T, color='green')
         plt.scatter(*data.T, s=30)
-        plt.scatter(*linepts.T, s=40)
-        plt.scatter(*linepts2.T, s=50)
+        plt.scatter(*linepts.T, s=50)
+        plt.scatter(*linepts2.T, s=40)
     else:
         # Verify that everything looks right.
         ax = m3d.Axes3D(plt.figure(figsize=(16, 9), dpi=100))
