@@ -73,7 +73,7 @@ class KSegmentTest(unittest.TestCase):
         """
         run k-segmentation on random data with default values
         """
-        self.test_from_file(n=12000, k=1000, show=True)
+        self.test_from_file(n=12000, k=1000, show=False)
 
     def test_loop(self):
         """
@@ -108,7 +108,7 @@ class KSegmentTest(unittest.TestCase):
         visualize_2d(points, coreset, k, eps, show=False)
 
         coreset2 = CoresetKSeg.CoresetKSeg.compute_coreset(coreset, k, eps, is_coreset=True)
-        visualize_2d(ksegment.get_coreset_points(coreset), coreset2, k, eps, show=True)
+        visualize_2d(ksegment.get_coreset_points(coreset), coreset2, k, eps, show=False)
 
         coreset_class = CoresetKSeg.CoresetKSeg(k, eps, weights=None)
         coreset_class.compute(points)
@@ -125,7 +125,8 @@ class KSegmentTest(unittest.TestCase):
 
         from pyspark import SparkContext, SparkConf
         conf = SparkConf().setMaster('local[*]').setAppName('Test')
-        # Set scheduler to FAIR: http://spark.apache.org/docs/latest/job-scheduling.html#scheduling-within-an-application
+        # Set scheduler to FAIR:
+        # http://spark.apache.org/docs/latest/job-scheduling.html#scheduling-within-an-application
         conf.set('spark.scheduler.mode', 'FAIR')
         sc = SparkContext(conf=conf)
         points_rdd = sc.parallelize(points, numSlices=2)
@@ -134,8 +135,9 @@ class KSegmentTest(unittest.TestCase):
         coll.__len__()
         # visualize_2d(points, coreset, k, eps, show=True)
         # points_rdd = sc.parallelize(points, k).glom()
-        # coresets_rdd_collected = points_rdd.map(lambda x: CoresetKSeg.build_coreset_on_pyspark(np.asarray(x), k, eps))\
-        #     .reduce(print)
+        # coresets_rdd_collected = points_rdd.map(
+        #       lambda x: CoresetKSeg.build_coreset_on_pyspark(np.asarray(x), k, eps))\
+        #       .reduce(print)
         # print(coresets_rdd_collected)
         # print(coresets_rdd_collected)
         # sc.stop()

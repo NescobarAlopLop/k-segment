@@ -309,6 +309,12 @@ def load_csv_into_dataframe(path: str) -> pd.DataFrame:
 
 
 def best_fit_line_and_cost(data: np.ndarray, row_idxs: np.ndarray = None):
+    # https://machinelearningmastery.com/solve-linear-regression-using-linear-algebra/
+    # https://austingwalters.com/using-svd-to-obtain-regression-lines/
+    # https://betterexplained.com/articles/linear-algebra-guide/
+    # https://towardsdatascience.com/my-notes-for-singular-value-decomposition-with-interactive-code-feat-peter-mills-7584f4f2930a
+    # https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.8-Singular-Value-Decomposition/
+
     if row_idxs is None:
         row_idxs = np.arange(len(data))
     np.insert(data, 0, values=1, axis=1)
@@ -346,11 +352,14 @@ def plot_data_vs_svd_line_3d(data, coeff, begin: int = 0, end: int = 10):
     print(linepts2)
 
     if data.shape[1] == 2:
-        plt.figure(figsize=(16, 9), dpi=200)
+        plt.figure()#(figsize=(16, 9), dpi=200)
         plt.grid(True)
         plt.xlabel('time')
         plt.plot(*linepts.T, color='red')
+        plt.plot(*linepts2.T, color='green')
         plt.scatter(*data.T, s=30)
+        plt.scatter(*linepts.T, s=50)
+        plt.scatter(*linepts2.T, s=40)
     else:
         # Verify that everything looks right.
         ax = m3d.Axes3D(plt.figure(figsize=(16, 9), dpi=100))
@@ -360,4 +369,4 @@ def plot_data_vs_svd_line_3d(data, coeff, begin: int = 0, end: int = 10):
         ax.plot3D(*linepts2.T, color='blue')
         ax.scatter3D(*linepts.T, s=20, marker='x')
         ax.scatter3D(*linepts2.T, s=20, marker='+')
-    # plt.show()
+    plt.show()

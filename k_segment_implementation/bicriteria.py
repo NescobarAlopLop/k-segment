@@ -8,8 +8,10 @@ import numpy as np
 import heapq
 try:
     from utils import generate_data_array
+    from utils_seg import best_fit_line_and_cost
 except ImportError:
     from k_segment_implementation.utils import generate_data_array
+    from k_segment_implementation.utils_seg import best_fit_line_and_cost
 from Dividers import Dividers, get_dividers_point_pairs_for_drawing
 from k_segment_coreset.utils_seg import calc_best_fit_line_polyfit, sqrd_dist_sum
 
@@ -56,6 +58,7 @@ def bicriteria(data, k, depth, cost_function, approximation_function):
         g_i = sum(costs)  # TODO: cost func with SVD
         # c_i = cost_function(costs, g_i)
         c_i = sum(costs)
+        g_i, c_i = best_fit_line_and_cost(data[indices, :].T)
 
         return g_i, c_i, output
     else:
