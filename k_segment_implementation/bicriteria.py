@@ -71,18 +71,18 @@ def bicriteria(data, k, depth, cost_function, approximation_function):
 
 def main(argv):
 
-    size = 256
+    #size = 256
     k = 2
     depth = 2
 
-    data = generate_data_array(size)
-    data = np.reshape(data, (8, 32))
-    data2 = np.asarray([10, 10, 10, 11, 10, 11, 10, 14,
-                       10, 10, 10, 12, 10, 15, 10, 12,
-                       10, 13, 10, 16, 10, 10, 10, 13])
+    #data = generate_data_array(size)
+    #data = np.reshape(data, (8, 32))
+    #data2 = np.asarray([10, 10, 10, 11, 10, 11, 10, 14,
+    #                   10, 10, 10, 12, 10, 15, 10, 12,
+    #                   10, 13, 10, 16, 10, 10, 10, 13])
 
-    data2 = misc.imread('/home/ge/magneton/input_data/tomato_100_67.JPG')
-    data2 = np.mean(data2, axis=2)
+    #data2 = misc.imread('/home/ge/magneton/input_data/tomato_100_67.JPG')
+    #data2 = np.mean(data2, axis=2)
 
     data2 = [[10,10,10,11,10,11,10,14,10,10,10,12,10,15,10,12,10,13,10,16,10,10,10,13],
             [10,10,10,11,10,11,10,14,10,10,10,12,10,15,10,12,10,13,10,16,10,10,10,13],
@@ -106,8 +106,17 @@ def main(argv):
     # data2 = np.vstack((data2,data2))
     _, _, divs = bicriteria(data2, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
     print('#' * 60)
-    print(get_dividers_point_pairs_for_drawing(divs))
-    print(data)
+    
+    points = get_dividers_point_pairs_for_drawing(divs)
+    print(points)
+    print('#' * 60)
+
+    data3 = misc.imread('./colour_grid.png')
+    data3 = np.array(data3)
+    _, _, divs3 = bicriteria(data3, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
+    points3 = get_dividers_point_pairs_for_drawing(divs3)
+    print(points3)
+    print('#' * 60)
 
     return 0
 
