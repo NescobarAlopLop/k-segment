@@ -31,7 +31,12 @@ class Dividers:
     def __lt__(self, other):
         if self.cost is None:
             print("found your error case")
-        return self.cost < other.cost
+        try:
+            res = self.cost < other.cost
+            return res
+        except ValueError as e:
+            print(e)
+        # return self.cost < other.cost
 
     def __repr__(self):
         return "Dividers({}, {}, {}, {}, {}, {})".format(self.cost, self.begin, self.end,
@@ -45,17 +50,21 @@ class Dividers:
 def get_dividers_point_pairs_for_drawing(dividers: List["Dividers"]):
     log.debug('{}, {}, {}'.format(this_file_name(), this_func_name(), inspect.currentframe().f_lineno))
     result = []
-    for i in dividers:
-        for j in i.sub_divs:
-            x1y1 = (i.begin, j.begin)
-            x1y2 = (i.begin, j.end)
-            x2y1 = (i.end, j.begin)
-            x2y2 = (i.end, j.end)
+    try:
+        for i in dividers:
+            if i.sub_divs is not None and type(i.sub_divs) != 'NoneType':
+                for j in i.sub_divs:
+                    x1y1 = (i.begin, j.begin)
+                    x1y2 = (i.begin, j.end)
+                    x2y1 = (i.end, j.begin)
+                    x2y2 = (i.end, j.end)
 
-            line1 = (x1y1, x1y2)
-            line2 = (x2y1, x2y2)
-            line3 = (x1y1, x2y1)
-            line4 = (x1y2, x2y2)
+                    line1 = (x1y1, x1y2)
+                    line2 = (x2y1, x2y2)
+                    line3 = (x1y1, x2y1)
+                    line4 = (x1y2, x2y2)
 
-            result.extend([line1, line2, line3, line4])
+                result.extend([line1, line2, line3, line4])
+    except TypeError as e:
+        print(e)
     return result
