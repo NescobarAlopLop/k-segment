@@ -3,6 +3,7 @@
 
 import sys
 from scipy import misc
+from skimage import io
 import numpy as np
 import heapq
 try:
@@ -103,13 +104,12 @@ def main(argv):
     # data2 = np.vstack((data2,data2))
     _, _, divs = bicriteria(data2, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
     print('#' * 60)
-    
+
     points = get_dividers_point_pairs_for_drawing(divs)
     print(points)
     print('#' * 60)
-
-    data3 = misc.imread('./colour_grid.png')
-    data3 = np.array(data3)
+    img = io.imread('colour_grid.png', as_gray=True)
+    data3 = np.array(img)
     _, _, divs3 = bicriteria(data3, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
     points3 = get_dividers_point_pairs_for_drawing(divs3)
     print(points3)
