@@ -46,11 +46,6 @@ def get_dividers_point_pairs_for_drawing(dividers: List["Dividers"]):
     log.debug('{}, {}, {}'.format(this_file_name(), this_func_name(), inspect.currentframe().f_lineno))
     result = []
     for i in dividers:
-        if i.sub_divs is None:
-            pass
-        if type(i.sub_divs) == 'NoneType':
-            pass
-
         for j in i.sub_divs:
             x1y1 = (i.begin, j.begin)
             x1y2 = (i.begin, j.end)
