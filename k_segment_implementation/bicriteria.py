@@ -103,6 +103,7 @@ def main(argv):
     # data2 = np.vstack((data2,data2))
     _, _, divs = bicriteria(data2, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
     print('#' * 60)
+    
     points = get_dividers_point_pairs_for_drawing(divs)
     print(points)
     print('#' * 60)
