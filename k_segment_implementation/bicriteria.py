@@ -65,7 +65,7 @@ def bicriteria(data, k, depth, cost_function, approximation_function):
         # print(means)
         g_i = approximation_function(data.T)   # TODO: cost func SVD
         # g_i = approximation_function(data.reshape((data.shape[1], data.shape[0])))
-        c_i = cost_function(data.T, g_i)
+        g_i, c_i = cost_function(data.T)
         return g_i, c_i, None
 
 
@@ -104,18 +104,18 @@ def main(argv):
 
     # data2 = np.column_stack((np.arange(1, len(data2) + 1), data2[:]))
     # data2 = np.vstack((data2,data2))
-    _, _, divs = bicriteria(data2, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
+    _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
     print('#' * 60)
 
     points = get_dividers_point_pairs_for_drawing(divs)
     print(points)
     print('#' * 60)
-    img = io.imread('colour_grid.png', as_gray=True)
-    data3 = np.array(img)
-    _, _, divs3 = bicriteria(data3, k, depth, sqrd_dist_sum, calc_best_fit_line_polyfit)
-    points3 = get_dividers_point_pairs_for_drawing(divs3)
-    print(points3)
-    print('#' * 60)
+    # img = io.imread('colour_grid.png', as_gray=True)
+    # data3 = np.array(img)
+    # _, _, divs3 = bicriteria(data3, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+    # points3 = get_dividers_point_pairs_for_drawing(divs3)
+    # print(points3)
+    # print('#' * 60)
 
     return 0
 

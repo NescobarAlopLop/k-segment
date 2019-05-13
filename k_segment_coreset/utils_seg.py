@@ -322,7 +322,10 @@ def best_fit_line_and_cost(data: np.ndarray, row_idxs: np.ndarray = None):
     # data += np.random.normal(size=data.shape) * 0.4
 
     # Calculate the mean of the points, i.e. the 'center' of the cloud
-    datamean = data[row_idxs].mean(axis=0)
+    try:
+        datamean = data[row_idxs].mean(axis=0)
+    except IndexError as e:
+        print(e)
 
     # Do an SVD on the mean-centered data.
     uu, dd, vv = np.linalg.svd(data[row_idxs] - datamean)
