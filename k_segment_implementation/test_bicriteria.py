@@ -3,6 +3,8 @@ import unittest
 import numpy as np
 from k_segment_implementation.bicriteria import bicriteria
 from utils_seg import best_fit_line_and_cost, calc_best_fit_line_polyfit
+from Dividers import get_dividers_point_pairs_for_drawing
+import matplotlib.pyplot as plt
 
 
 class UtilsTest(unittest.TestCase):
@@ -13,7 +15,17 @@ class UtilsTest(unittest.TestCase):
         data1 = np.asarray([
             10, 10, 10, 11, 10, 11, 10, 14, 10, 10, 10, 12, 10, 15, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13
             ])[:, np.newaxis]
-        _, _, divs = bicriteria(data1.T, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        _, _, divs = bicriteria(data1, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        points = get_dividers_point_pairs_for_drawing(divs)
+        plt.figure()  # (figsize=(16, 9), dpi=200)
+        plt.grid(True)
+
+        for line in points:
+            print(line)
+            x = [line[0][0], line[1][0]]
+            y = [line[0][1], line[1][1]]
+            plt.plot(x,y)
+        plt.show()
 
     def test_bicriteria_two_dim_data(self):
         k = 2
@@ -33,7 +45,27 @@ class UtilsTest(unittest.TestCase):
                  [10, 10, 10, 13, 10, 15, 10, 12, 10, 10, 10, 12, 10, 10, 10, 11, 10, 11, 10, 14, 10, 13, 10, 16],
                  [10, 10, 10, 13, 10, 15, 10, 12, 10, 10, 10, 12, 10, 10, 10, 11, 10, 11, 10, 14, 10, 13, 10, 16],
                  [10, 10, 10, 13, 10, 15, 10, 12, 10, 10, 10, 12, 10, 10, 10, 11, 10, 11, 10, 14, 10, 13, 10, 16],
-                 [10, 10, 10, 13, 10, 15, 10, 12, 10, 10, 10, 12, 10, 10, 10, 11, 10, 11, 10, 14, 10, 13, 10, 16], ]
+                 [10, 10, 10, 13, 10, 15, 10, 12, 10, 10, 10, 12, 10, 10, 10, 11, 10, 11, 10, 14, 10, 13, 10, 16],
+                 [10, 10, 10, 11, 10, 11, 10, 14, 10, 10, 10, 12, 10, 15, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13],
+                 [10, 10, 10, 11, 10, 11, 10, 14, 10, 10, 10, 12, 10, 15, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13],
+                 [10, 10, 10, 11, 10, 11, 10, 14, 10, 10, 10, 12, 10, 15, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13],
+                 [10, 10, 10, 11, 10, 11, 10, 14, 10, 10, 10, 12, 10, 15, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13],
+                 [10, 11, 10, 14, 10, 10, 10, 11, 10, 10, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13, 10, 15, 10, 12],
+                 [10, 11, 10, 14, 10, 10, 10, 11, 10, 10, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13, 10, 15, 10, 12],
+                 [10, 11, 10, 14, 10, 10, 10, 11, 10, 10, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13, 10, 15, 10, 12],
+                 [10, 11, 10, 14, 10, 10, 10, 11, 10, 10, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13, 10, 15, 10, 12],
+                 ]
         data2 = np.array(data2)
 
         _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        points = get_dividers_point_pairs_for_drawing(divs)
+        plt.figure()  # (figsize=(16, 9), dpi=200)
+        plt.grid(True)
+
+        plt.imshow(data2)
+        for line in points:
+            print(line)
+            x = [line[0][0], line[1][0]]
+            y = [line[0][1], line[1][1]]
+            plt.plot(x,y, linewidth=4.4, color='red')
+        plt.show()
