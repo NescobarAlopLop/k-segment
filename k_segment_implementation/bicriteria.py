@@ -13,6 +13,7 @@ except ImportError:
     from k_segment_implementation.utils import generate_data_array
     from k_segment_coreset.utils_seg import best_fit_line_and_cost, calc_best_fit_line_polyfit, sqrd_dist_sum
 from Dividers import Dividers, get_dividers_point_pairs_for_drawing
+from PIL import Image, ImageDraw
 
 
 def bicriteria(data, k, depth, cost_function, approximation_function):
@@ -118,6 +119,14 @@ def main(argv):
     print(points3)
     print('#' * 60)
 
+    im = Image.open('colour_grid.png')
+
+    draw = ImageDraw.Draw(im)
+
+    for pair in points3:
+        draw.line(pair, fill='black')
+
+    im.show()
     return 0
 
 

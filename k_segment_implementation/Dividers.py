@@ -59,10 +59,10 @@ def get_dividers_point_pairs_for_drawing(dividers: List["Dividers"]):
                     x2y1 = (i.end, j.begin)
                     x2y2 = (i.end, j.end)
 
-                    line1 = (x1y1, x1y2)
-                    line2 = (x2y1, x2y2)
-                    line3 = (x1y1, x2y1)
-                    line4 = (x1y2, x2y2)
+                    line1 = [x1y1, x1y2]
+                    line2 = [x2y1, x2y2]
+                    line3 = [x1y1, x2y1]
+                    line4 = [x1y2, x2y2]
 
                 result.extend([line1, line2, line3, line4])
     except TypeError as e:
