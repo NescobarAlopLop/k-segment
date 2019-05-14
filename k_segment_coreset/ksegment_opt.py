@@ -181,6 +181,11 @@ def plot_results(w_class):
     d = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     k = "k=" + str(w_class.k)
     filename = "_".join([basename, d, k])  # e.g. 'log_im_120508_171442'
+    import os
+    try:
+        os.stat("output/")
+    except:
+        os.mkdir("output/")
     plt.savefig("output/" + filename)
     plt.show()
 
@@ -191,7 +196,7 @@ def main():
     # nine_parts = misc.imread('input_data/grey_blobs_30_1.png')
     # nine_parts = misc.imread('input_data/grey_blobs_30_2.png')
     # nine_parts = misc.imread('input_data/tomato_20_14.JPG')
-    nine_parts = misc.imread('input_data/tomato_40_27.JPG')
+    # nine_parts = misc.imread('input_data/tomato_40_27.JPG')
     # nine_parts = misc.imread('input_data/tomatos_2_120_80.png')
     # nine_parts = misc.imread('input_data/tomato_100_67.JPG')
 
