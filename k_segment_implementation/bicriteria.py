@@ -22,17 +22,17 @@ def bicriteria(data, k, depth, cost_function, approximation_function):
         data_indices = np.arange(data.shape[0])
         costs = []
         while len(data_indices) >= 2 * k + 1:
-            print("len(data_indices): ", len(data_indices))
+            # print("len(data_indices): ", len(data_indices))
             row_indices = np.array_split(data_indices, 3 * k)
             tmp = []
-            print("row indices: ", row_indices)
+            # print("row indices: ", row_indices)
             for indices in row_indices:
                 if len(indices) > 0:
                     # print("data: ", data)
                     # print("data[indices, :].T: ", data[indices, :].T)
                     # data = np.column_stack((np.arange(1, len(data) + 1), data[:]))
                     g_i, c_i, sub_divs = bicriteria(data[indices, :].T, k, depth - 1, cost_function, approximation_function)
-                    print("g_i, c_i: ", g_i, c_i)
+                    # print("g_i, c_i: ", g_i, c_i)
                     begin = indices[0]
                     end = indices[-1]
                     dividers = Dividers(begin, end, sub_divs, c_i, g_i, indices)
@@ -47,10 +47,10 @@ def bicriteria(data, k, depth, cost_function, approximation_function):
             rows_to_remove = np.nonzero(np.asarray(values_to_remove)[:, None] == data_indices)[1]
 
             data_indices = np.delete(data_indices, rows_to_remove, axis=0)
-            print("data_indices: ", data_indices)
+            # print("data_indices: ", data_indices)
         for item in output:
             costs.append(item.cost)
-        print("costs: ", costs)
+        # print("costs: ", costs)
         # g_i = approximation_function(costs)  # TODO: cost func with SVD
         g_i = sum(costs)  # TODO: cost func with SVD
         # c_i = cost_function(costs, g_i)

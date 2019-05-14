@@ -12,7 +12,7 @@ try:
 except ImportError:
     from k_segment_implementation.utils import this_file_name, this_func_name
 
-log.basicConfig(stream=sys.stderr, level=log.DEBUG)
+log.basicConfig(stream=sys.stderr, level=log.INFO)
 
 
 class Dividers:
