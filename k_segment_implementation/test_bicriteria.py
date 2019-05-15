@@ -2,10 +2,18 @@ import unittest
 
 import numpy as np
 from k_segment_implementation.bicriteria import bicriteria
-from utils_seg import best_fit_line_and_cost, calc_best_fit_line_polyfit
+
+try:
+    from utils import generate_data_array
+    from utils_seg import best_fit_line_and_cost, calc_best_fit_line_polyfit
+except ImportError:
+    from k_segment_implementation.utils import generate_data_array
+    from k_segment_coreset.utils_seg import best_fit_line_and_cost, calc_best_fit_line_polyfit
+
 from Dividers import get_dividers_point_pairs_for_drawing
 import matplotlib.pyplot as plt
 from scipy import misc
+
 
 class UtilsTest(unittest.TestCase):
 
@@ -14,8 +22,8 @@ class UtilsTest(unittest.TestCase):
         depth = 1
         data1 = np.asarray([
             10, 10, 10, 11, 10, 11, 10, 14, 10, 10, 10, 12, 10, 15, 10, 12, 10, 13, 10, 16, 10, 10, 10, 13
-            ])[:, np.newaxis]
-        _, _, divs = bicriteria(data1, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        ])[:, np.newaxis]
+        _, _, divs = bicriteria(data1, k, depth, best_fit_line_and_cost)
         points = get_dividers_point_pairs_for_drawing(divs)
         plt.figure()  # (figsize=(16, 9), dpi=200)
         plt.grid(True)
@@ -24,7 +32,7 @@ class UtilsTest(unittest.TestCase):
             print(line)
             x = [line[0][0], line[1][0]]
             y = [line[0][1], line[1][1]]
-            plt.plot(x,y)
+            plt.plot(x, y)
         plt.show()
 
     def test_bicriteria_two_dim_data(self):
@@ -57,17 +65,16 @@ class UtilsTest(unittest.TestCase):
                  ]
         data2 = np.array(data2)
 
-        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost)
         points = get_dividers_point_pairs_for_drawing(divs)
         plt.figure()  # (figsize=(16, 9), dpi=200)
         plt.grid(True)
 
         plt.imshow(data2)
         for line in points:
-            # print(line)
             x = [line[0][0], line[1][0]]
             y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=4.4, color='red')
+            plt.plot(x, y, linewidth=4.4, color='red')
         plt.show()
 
     def test_with_img(self):
@@ -78,17 +85,16 @@ class UtilsTest(unittest.TestCase):
 
         data2 = np.asarray(img_file)
 
-        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost)
         points = get_dividers_point_pairs_for_drawing(divs)
         plt.figure()  # (figsize=(16, 9), dpi=200)
         plt.grid(True)
 
         plt.imshow(data2)
         for line in points:
-            # print(line)
             x = [line[0][0], line[1][0]]
             y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=1, color='red')
+            plt.plot(x, y, linewidth=1, color='red')
         plt.show()
 
     def test_with_banana(self):
@@ -99,7 +105,7 @@ class UtilsTest(unittest.TestCase):
 
         data2 = np.asarray(flat_img)
 
-        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost)
         points = get_dividers_point_pairs_for_drawing(divs)
         plt.figure()  # (figsize=(16, 9), dpi=200)
         plt.grid(True)
@@ -109,7 +115,7 @@ class UtilsTest(unittest.TestCase):
             # print(line)
             x = [line[0][0], line[1][0]]
             y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=1, color='red')
+            plt.plot(x, y, linewidth=1, color='red')
         plt.show()
 
     def test_with_bar_code(self):
@@ -120,15 +126,14 @@ class UtilsTest(unittest.TestCase):
 
         data2 = np.asarray(flat_img)
 
-        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost)
         points = get_dividers_point_pairs_for_drawing(divs)
         plt.figure()  # (figsize=(16, 9), dpi=200)
         plt.grid(True)
 
         plt.imshow(img_file)
         for line in points:
-            # print(line)
             x = [line[0][0], line[1][0]]
             y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=1, color='red')
+            plt.plot(x, y, linewidth=1, color='red')
         plt.show()
