@@ -92,7 +92,7 @@ class UtilsTest(unittest.TestCase):
         plt.show()
 
     def test_with_banana(self):
-        img_file = misc.imread('/home/ge/k-segment/datasets/2018-04-09_BA_tree_15.JPG')
+        img_file = misc.imread('/home/ge/k-segment/datasets/2018-04-09_BA_tree_12.JPG')
         flat_img = np.mean(img_file, axis=2)
         k = 2
         depth = 2
