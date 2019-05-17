@@ -3,6 +3,7 @@ import cProfile
 import datetime
 from time import time
 import sys
+import imageio
 
 import matplotlib.lines as lines
 import matplotlib.pyplot as plt
@@ -280,7 +281,7 @@ def main(path: str = None, k: int = 4):
     #     [1,1,1,1,1,1,2,2,2,3,3,3,3]
     # ])
     if path is not None:
-        nine_parts = misc.imread(path)
+        nine_parts = imageio.imread(path)
     w_class = KMean(nine_parts, k=k)
     w_class.best_sum_of_variances()
     print('class mat weight', w_class.total_weight, w_class.horizontal_dividers)
