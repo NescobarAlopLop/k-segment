@@ -1,11 +1,14 @@
 # import cupy as np
-import numpy as np
-from time import time
-import matplotlib.pyplot as plt
-import datetime
-from scipy import misc
-import matplotlib.lines as lines
 import cProfile
+import datetime
+from time import time
+import sys
+
+import matplotlib.lines as lines
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import misc
+
 # from Queue import Queue
 
 
@@ -147,7 +150,7 @@ def mean_squared_distance(arr):
     return mse
 
 
-def plot_results(w_class):
+def plot_results(w_class, show_fig=False):
     offset = 0.0
     fig, ax = plt.subplots()
 
@@ -181,17 +184,23 @@ def plot_results(w_class):
     d = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     k = "k=" + str(w_class.k)
     filename = "_".join([basename, d, k])  # e.g. 'log_im_120508_171442'
+    import os
+    try:
+        os.stat("output/")
+    except:
+        os.mkdir("output/")
     plt.savefig("output/" + filename)
-    plt.show()
+    if show_fig:
+        plt.show()
 
 
 @timer
-def main():
+def main(path: str = None, k: int = 4):
     # nine_parts = misc.imread('input_data/grey_blobs_30.png')
     # nine_parts = misc.imread('input_data/grey_blobs_30_1.png')
     # nine_parts = misc.imread('input_data/grey_blobs_30_2.png')
     # nine_parts = misc.imread('input_data/tomato_20_14.JPG')
-    nine_parts = misc.imread('input_data/tomato_40_27.JPG')
+    # nine_parts = misc.imread('input_data/tomato_40_27.JPG')
     # nine_parts = misc.imread('input_data/tomatos_2_120_80.png')
     # nine_parts = misc.imread('input_data/tomato_100_67.JPG')
 
@@ -241,22 +250,22 @@ def main():
     #     [10, 10, 10, 22, 22, 20, 20, 40, 40, 10, 12, 12, 12, 5, 5, 12, 13, 20, 22, 23, 24, 30, 31, 30, 50, 50],
     #     [10, 10, 10, 22, 22, 20, 20, 40, 40, 10, 12, 12, 12, 5, 5, 12, 13, 20, 22, 23, 24, 30, 31, 30, 50, 50],
     # ])
-    nine_parts = np.array([
-        [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
-        [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
-        [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
-        [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
-        [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
-        [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
-        [50, 50, 50, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 30, 30, 30, 40, 40, 40, 40, 40],
-        [50, 50, 50, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 30, 30, 30, 40, 40, 40, 40, 40],
-        [50, 50, 50, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 30, 30, 30, 40, 40, 40, 40, 40],
-        [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
-        [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
-        [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
-        [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
-        [20, 20, 20, 20, 40, 40, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
-    ])
+    # nine_parts = np.array([
+    #     [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
+    #     [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
+    #     [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+    #     [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+    #     [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+    #     [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+    #     [50, 50, 50, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 30, 30, 30, 40, 40, 40, 40, 40],
+    #     [50, 50, 50, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 30, 30, 30, 40, 40, 40, 40, 40],
+    #     [50, 50, 50, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 10, 10, 10, 10, 10, 30, 30, 30, 40, 40, 40, 40, 40],
+    #     [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
+    #     [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
+    #     [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
+    #     [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
+    #     [20, 20, 20, 20, 40, 40, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
+    # ])
 
     # nine_parts = np.array([
     #     [10, 30, 20, 20, 20, 20, 30, 30, 40, 40, 40, 50, 50],
@@ -270,15 +279,35 @@ def main():
     #     [1,1,1,1,1,1,2,2,2,3,3,3,3],
     #     [1,1,1,1,1,1,2,2,2,3,3,3,3]
     # ])
-    w_class = KMean(nine_parts, k=4)
+    if path is not None:
+        nine_parts = misc.imread(path)
+    w_class = KMean(nine_parts, k=k)
     w_class.best_sum_of_variances()
     print('class mat weight', w_class.total_weight, w_class.horizontal_dividers)
-    plot_results(w_class)
+
+    plot_results(w_class, show_fig=False)
 
 
 if __name__ == '__main__':
-    cp.enable()
-    main()
-    cp.disable()
-    # cp.print_stats()
+    file_path = None
+    k = None
+    print(sys.argv)
+    if len(sys.argv) >= 3:
+        file_path = sys.argv[1]
+        k = int(sys.argv[2])
+        cp.enable()
+        main(path=file_path, k=k)
+        cp.disable()
 
+    elif len(sys.argv) >= 2:
+        file_path = sys.argv[1]
+        cp.enable()
+        main(path=file_path)
+        cp.disable()
+
+    else:
+        cp.enable()
+        main()
+        cp.disable()
+
+    # cp.print_stats()
