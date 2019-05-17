@@ -57,4 +57,4 @@ Temporary Items
 k_segment_implementation/.idea
 venv/
 k-seg/
-/output/*
+output/*
