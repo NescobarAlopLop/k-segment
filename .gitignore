@@ -52,8 +52,8 @@ Temporary Items
 *.suo
 
 .idea/*
-/k_segment_coreset/main.pdf
-/k_segment_coreset/results/
+k_segment_coreset/main.pdf
+k_segment_coreset/results/
 k_segment_implementation/.idea
 venv/
 k-seg/
