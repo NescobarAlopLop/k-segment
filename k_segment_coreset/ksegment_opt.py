@@ -1,11 +1,13 @@
 # import cupy as np
-import numpy as np
-from time import time
-import matplotlib.pyplot as plt
-import datetime
-from scipy import misc
-import matplotlib.lines as lines
 import cProfile
+import datetime
+from time import time
+
+import matplotlib.lines as lines
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import misc
+
 # from Queue import Queue
 
 
