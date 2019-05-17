@@ -154,8 +154,8 @@ def plot_results(w_class, show_fig=False):
     offset = 0.0
     fig, ax = plt.subplots()
 
-    ax.set_ylim(ymin=-offset, ymax=w_class.mat_rows - offset)
-    ax.set_xlim(xmin=-offset, xmax=w_class.mat_cols - offset)
+    ax.set_ylim(bottom=-offset, top=w_class.mat_rows - offset)
+    ax.set_xlim(left=-offset, right=w_class.mat_cols - offset)
 
     ax.imshow(w_class.mat, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
 
