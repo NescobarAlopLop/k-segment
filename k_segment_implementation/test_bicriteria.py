@@ -5,6 +5,23 @@ from k_segment_implementation.bicriteria import bicriteria
 from utils_seg import best_fit_line_and_cost, calc_best_fit_line_polyfit
 from Dividers import get_dividers_point_pairs_for_drawing
 import matplotlib.pyplot as plt
+from typing import List, Tuple
+
+
+def plot_lines_on_plot(plot, lines: List[List[Tuple[int, int]]]):
+    """
+    plots lines on 2d plot
+    :param plot: matplotlib plot
+    :param lines: list of lines, each item on a list is a list of 2 tuples, each tuple is a point to plot line through
+    :return: plot with lines on it
+    """
+    for line in lines:
+        # print(line)
+        x = [line[0][0], line[1][0]]
+        y = [line[0][1], line[1][1]]
+        plot.plot(x, y, linewidth=1.01, color='red')
+
+    return plot
 
 
 class UtilsTest(unittest.TestCase):
@@ -19,12 +36,7 @@ class UtilsTest(unittest.TestCase):
         points = get_dividers_point_pairs_for_drawing(divs)
         plt.figure()  # (figsize=(16, 9), dpi=200)
         plt.grid(True)
-
-        for line in points:
-            print(line)
-            x = [line[0][0], line[1][0]]
-            y = [line[0][1], line[1][1]]
-            plt.plot(x,y)
+        plot_lines_on_plot(plt, points)
         plt.show()
 
     @staticmethod
@@ -64,11 +76,7 @@ class UtilsTest(unittest.TestCase):
         plt.grid(True)
 
         plt.imshow(data2)
-        for line in points:
-            # print(line)
-            x = [line[0][0], line[1][0]]
-            y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=4.4, color='red')
+        plot_lines_on_plot(plt, points)
         plt.show()
 
     @staticmethod
@@ -86,11 +94,7 @@ class UtilsTest(unittest.TestCase):
         plt.grid(True)
 
         plt.imshow(data2)
-        for line in points:
-            # print(line)
-            x = [line[0][0], line[1][0]]
-            y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=1, color='red')
+        plot_lines_on_plot(plt, points)
         plt.show()
 
     @staticmethod
@@ -108,11 +112,7 @@ class UtilsTest(unittest.TestCase):
         plt.grid(True)
 
         plt.imshow(img_file)
-        for line in points:
-            # print(line)
-            x = [line[0][0], line[1][0]]
-            y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=1, color='red')
+        plot_lines_on_plot(plt, points)
         plt.show()
 
     @staticmethod
@@ -130,11 +130,7 @@ class UtilsTest(unittest.TestCase):
         plt.grid(True)
 
         plt.imshow(img_file)
-        for line in points:
-            # print(line)
-            x = [line[0][0], line[1][0]]
-            y = [line[0][1], line[1][1]]
-            plt.plot(x, y, linewidth=1, color='red')
+        plot_lines_on_plot(plt, points)
         plt.show()
 
     @staticmethod
@@ -152,9 +148,5 @@ class UtilsTest(unittest.TestCase):
         plt.grid(True)
 
         plt.imshow(img_file)
-        for line in points:
-            # print(line)
-            x = [line[0][0], line[1][0]]
-            y = [line[0][1], line[1][1]]
-            plt.plot(x, y, linewidth=1, color='red')
+        plot_lines_on_plot(plt, points)
         plt.show()
