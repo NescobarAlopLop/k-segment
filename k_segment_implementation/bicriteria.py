@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 
 import sys
-from scipy import misc
 from skimage import io
 import numpy as np
 import heapq
