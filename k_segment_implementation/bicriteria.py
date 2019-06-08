@@ -49,19 +49,12 @@ def bicriteria(data, k, depth, cost_function, approximation_function):
             # print("data_indices: ", data_indices)
         for item in output:
             costs.append(item.cost)
-        # print("costs: ", costs)
-        # g_i = approximation_function(costs)  # TODO: cost func with SVD
-        g_i = sum(costs)  # TODO: cost func with SVD
-        # c_i = cost_function(costs, g_i)
-        c_i = sum(costs)
         g_i, c_i = cost_function(data[data_indices, :].T)
 
         return g_i, c_i, output
     else:
         # means = data.mean(axis=0)
         # print(means)
-        g_i = approximation_function(data.T)   # TODO: cost func SVD
-        # g_i = approximation_function(data.reshape((data.shape[1], data.shape[0])))
         g_i, c_i = cost_function(data.T)
         return g_i, c_i, None
 
