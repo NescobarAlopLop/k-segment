@@ -49,6 +49,21 @@ def calc_best_fit_line(points: np.array) -> np.array:
 
 
 def calc_best_fit_line_polyfit(points, weight=False, is_coreset=False):
+    return best_fit_line_and_cost(points)[0]
+    # if type(weight) == bool:
+    #     weight = [1] * len(points)
+    #     if weight:
+    #         is_coreset = True
+    # try:
+    #     time_array = points[:, 0]
+    #     data = points[:, 1:]
+    #     return np.polyfit(time_array, data, 1, w=weight)
+    # except Exception as e:
+    #     print("error in calc_best_fit_line_polyfit \nis coreset: {}\nerror: {}"
+    #           .format(is_coreset.__str__(), e))
+
+def calc_best_fit_line_polyfit_old(points, weight=False, is_coreset=False):
+    # only for visualiazation depricated!
     if type(weight) == bool:
         weight = [1] * len(points)
         if weight:
@@ -147,7 +162,7 @@ def compute_lines_for_points_split_by_dividers(points, dividers):
         segment_end = int(dividers[i + 1] - 1 if i != len(dividers) - 2 else dividers[i + 1])
         segment_points = points[segment_begin:segment_end, :]
 
-        best_fit_line = calc_best_fit_line_polyfit(segment_points)
+        best_fit_line = calc_best_fit_line_polyfit_old(segment_points)
 
         lines.append([pt_on_line(dividers[i], best_fit_line),
                       pt_on_line(dividers[i + 1] - (1 if i != len(dividers) - 2 else 0), best_fit_line)])
