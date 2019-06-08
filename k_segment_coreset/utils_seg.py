@@ -20,7 +20,7 @@ warnings.simplefilter('ignore', np.RankWarning)
 # sc = SparkContext(conf=conf)
 
 
-def cost_best_fit_line_to_points(points, is_coreset=False):
+def cost_best_fit_line_to_points(points: np.ndarray, is_coreset: bool = False):
     best_fit_line = calc_best_fit_line_polyfit(points, is_coreset)
     return sqrd_dist_sum(points, best_fit_line)
 
@@ -63,14 +63,15 @@ def calc_best_fit_line_polyfit(points, weight=False, is_coreset=False):
 
 
 def sqrd_dist_sum(points, line):
-    try:
-        time_array = points[:, 0]
-        tmp = np.vstack([time_array, np.ones(len(time_array))]).T
-        data = points[:, 1:]
-        projected_points = np.dot(tmp, line)
-        return ((projected_points - data) ** 2).sum(axis=None)
-    except Exception as e:
-        print("error in sqrd_dist_sum: {}".format(e))
+    return best_fit_line_and_cost(points)[1]
+    # try:
+    #     time_array = points[:, 0]
+    #     tmp = np.vstack([time_array, np.ones(len(time_array))]).T
+    #     data = points[:, 1:]
+    #     projected_points = np.dot(tmp, line)
+    #     return ((projected_points - data) ** 2).sum(axis=None)
+    # except Exception as e:
+    #     print("error in sqrd_dist_sum: {}".format(e))
 
 
 def sqrd_dist_sum_weighted(points, line, w):
@@ -180,7 +181,7 @@ def visualize_2d(points, coreset, k, eps, show=False):
     :param show: if show figure window
     :return: void
     """
-    plt.figure(figsize=(19, 9), dpi=200)
+    plt.figure(figsize=(8, 5), dpi=120)
     plt.scatter(points[:, 0], points[:, 1], s=3)
 
     coreset_points = ksegment.get_coreset_points(coreset)
@@ -202,7 +203,7 @@ def visualize_2d(points, coreset, k, eps, show=False):
         plt.plot(*lint_pts_arr.T, label=str(idx), alpha=0.4, linestyle='-', linewidth=2.0)
     total_mse = compute_total_mse(points, dividers, segments_lines)
 
-    plt.suptitle('data size {}, coreset size {}, k = {}, error = {:<.2f}% mse for all points = {:<.3f}'
+    plt.suptitle('data size {}, coreset size {}, required k = {} and error = {:<.2f}%. Result MSE = {:<.3f}'
                  .format(len(points), len(coreset), len(segments_lines), eps * 100, total_mse))
     plt.legend()
     plt.savefig("results/{:%Y_%m_%d_%s}".format(datetime.now()))
@@ -323,20 +324,17 @@ def best_fit_line_and_cost(data: np.ndarray, row_idxs: np.ndarray = None):
 
     # Calculate the mean of the points, i.e. the 'center' of the cloud
     try:
-        datamean = data[row_idxs].mean(axis=0)
-
+        data_mean = data[row_idxs].mean(axis=0)
 
     # Do an SVD on the mean-centered data.
-
-        uu, dd, vv = np.linalg.svd(data[row_idxs] - datamean)
+        uu, dd, vv = np.linalg.svd(data[row_idxs] - data_mean)
+        # Now vv[0] contains the first principal component, i.e. the direction
+        # vector of the 'best fit' line in the least squares sense.
+        return vv[0], dd[0]
     except np.linalg.LinAlgError as err:
         print(err)
     except IndexError as e:
         print(e)
-
-    # Now vv[0] contains the first principal component, i.e. the direction
-    # vector of the 'best fit' line in the least squares sense.
-    return vv[0], dd[0]
 
 
 def plot_data_vs_svd_line_3d(data, coeff, begin: int = 0, end: int = 10):

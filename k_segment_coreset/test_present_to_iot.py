@@ -144,5 +144,44 @@ class KSegmentTest(unittest.TestCase):
         pass
 
 
+class TestSvdVsNpPolyfit(unittest.TestCase):
+    def test_compare(self, b: int = 660,
+                     k: int = 4,
+                     eps: float = 0.3) -> None:
+        """
+        :param b:       take points starting from line b
+        :param k:       number of segments
+        :param eps:     epsilon error
+        """
+        path = "../datasets/KO_no_date.csv"
+        n = 200
+        if path is None:
+            data = gen_synthetic_graph(n=300, k=k, dim=1, deviation=0.001, max_diff=2)
+            # data = gen_synthetic_graph(n=400, k=k, dim=1, deviation=1, max_diff=2)
+        else:
+            data = load_csv_into_dataframe(path).values
+        if b > len(data):
+            b = 0
+        if not n:
+            n = len(data)
+        else:
+            n = b + n
+        if n > len(data):
+            n = len(data)
+        print("using points {} to {}".format(b, b+n))
+        data = data[b:n, :]
+
+        p = np.column_stack((np.arange(1, len(data) + 1), data[:]))
+        print("coreset size has to be: O(k) · (log n / eps^2 ) = {}".format(k * (np.log2(n) / eps ** 2)))
+
+        coreset = CoresetKSeg.CoresetKSeg.compute_coreset(p, k, eps)
+        coreset_points = ksegment.get_coreset_points(coreset)
+
+        print("original data len\t{}\ncoreset points len:\t{}".format(len(p), len(coreset_points)))
+        self.assertGreaterEqual(len(p), len(coreset_points))
+
+        visualize_2d(p, coreset, k, eps, show=True)
+
+
 if __name__ == '__main__':
     unittest.main()
