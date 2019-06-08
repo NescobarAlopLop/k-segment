@@ -168,7 +168,7 @@ class CoresetKSeg(object):
         return "KSegCoreset size = {}, for k = {}, eps = {:<2}".format(len(self.coreset), self.k, self.eps)
 
 
-def one_seg_cost(points, is_coreset=False):
+def one_seg_cost(points: np.ndarray, is_coreset: bool = False):
     if is_coreset:
         one_segment_coreset = compute_one_segment_coreset(points, is_coreset)
         return utils_seg.cost_best_fit_line_to_points(one_segment_coreset.repPoints, is_coreset) * one_segment_coreset.weight

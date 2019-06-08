@@ -140,7 +140,6 @@ def coreset_k_segment(D, k):
 
 
 def get_coreset_points(coreset):
-    pass
     rv = []
     for c in coreset:
         for rp in c.C.repPoints:
