@@ -3,6 +3,6 @@ numpy
 matplotlib
 pandas
 scipy
-scikit-image
 imageio
 pillow
+imageio-ffmpeg

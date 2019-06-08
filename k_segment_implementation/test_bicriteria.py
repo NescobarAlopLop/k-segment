@@ -1,5 +1,5 @@
 import unittest
-
+import imageio
 import numpy as np
 from k_segment_implementation.bicriteria import bicriteria
 from utils_seg import best_fit_line_and_cost, calc_best_fit_line_polyfit
@@ -134,7 +134,7 @@ class UtilsTest(unittest.TestCase):
         plt.show()
 
     def test_with_bar_code_1(self):
-        img_file = misc.imread('/home/ge/k-segment/datasets/bar_code_1.png')
+        img_file = imageio.imread('/home/ge/k-segment/datasets/bar_code.png', )
         flat_img = np.mean(img_file, axis=2)
         k = 1
         depth = 2
@@ -151,5 +151,5 @@ class UtilsTest(unittest.TestCase):
             # print(line)
             x = [line[0][0], line[1][0]]
             y = [line[0][1], line[1][1]]
-            plt.plot(x,y, linewidth=1, color='red')
+            plt.plot(x, y, linewidth=1, color='red')
         plt.show()
