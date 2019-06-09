@@ -61,13 +61,13 @@ class KSegmentTest(unittest.TestCase):
         """
         run k-segmentation coreset on CocaCola stock price
         """
-        self.test_from_file("../datasets/KO_no_date.csv", n=100, b=0, k=8, eps=0.4, show=False)
+        self.test_from_file("../datasets/segmentation/KO_no_date.csv", n=100, b=0, k=8, eps=0.4, show=False)
 
     def test_chunk_num_1(self):
         """
         run k-segmentation coreset on iotshield input test
         """
-        self.test_from_file("../datasets/chunk_num_1.csv", n=200, b=100, k=8, eps=0.6, show=False)
+        self.test_from_file("../datasets/segmentation/chunk_num_1.csv", n=200, b=100, k=8, eps=0.6, show=False)
 
     def test_basic_demo_synth(self):
         """
