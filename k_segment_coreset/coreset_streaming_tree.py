@@ -1,6 +1,5 @@
 import random
 import time
-import warnings
 from collections import namedtuple
 from threading import Thread, Event
 from typing import List
@@ -173,7 +172,7 @@ def get_dividers_spark_no_tree(points: np.ndarray, col_to_divide_by: int = 0) ->
 
 
 if __name__ == '__main__':
-    file_path = '/home/ge/k-segment/datasets/KO_no_date.csv'
+    file_path = '/home/ge/k-segment/datasets/segmentation/KO_no_date.csv'
     points = utils_seg.load_csv_into_dataframe(file_path).values
     print(get_dividers(points))
     print(get_dividers_spark_no_tree(points))
