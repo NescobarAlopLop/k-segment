@@ -21,8 +21,9 @@ warnings.simplefilter('ignore', np.RankWarning)
 
 
 def cost_best_fit_line_to_points(points: np.ndarray, is_coreset: bool = False):
-    best_fit_line = calc_best_fit_line_polyfit(points, is_coreset)
-    return sqrd_dist_sum(points, best_fit_line)
+    return best_fit_line_and_cost(points)[1]
+    # best_fit_line = calc_best_fit_line_polyfit(points, is_coreset)
+    # return sqrd_dist_sum(points, best_fit_line)
 
 
 def best_fit_line_cost_weighted(points, weight, is_coreset=False):
@@ -62,6 +63,7 @@ def calc_best_fit_line_polyfit(points, weight=False, is_coreset=False):
     #     print("error in calc_best_fit_line_polyfit \nis coreset: {}\nerror: {}"
     #           .format(is_coreset.__str__(), e))
 
+
 def calc_best_fit_line_polyfit_old(points, weight=False, is_coreset=False):
     # only for visualiazation depricated!
     if type(weight) == bool:
@@ -78,7 +80,7 @@ def calc_best_fit_line_polyfit_old(points, weight=False, is_coreset=False):
 
 
 def sqrd_dist_sum(points, line):
-    return best_fit_line_and_cost(points)[1]
+    return best_fit_line_and_cost(points[:, 1:])[1]
     # try:
     #     time_array = points[:, 0]
     #     tmp = np.vstack([time_array, np.ones(len(time_array))]).T
