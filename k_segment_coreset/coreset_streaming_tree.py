@@ -24,8 +24,9 @@ WeightedPointSet = namedtuple("WeightedPointSet", "points weights")
 
 
 class CoresetStreamer(Thread):
-
-    def __init__(self, coreset_alg, sample_size: int, eps: float, k: int, streaming_context):
+    def __init__(
+        self, coreset_alg, sample_size: int, eps: float, k: int, streaming_context
+    ):
         super().__init__(name="coreset stream thread")
         self.coreset_alg = coreset_alg
         self.sample_size = sample_size
@@ -38,7 +39,9 @@ class CoresetStreamer(Thread):
         self.leaf_size = sample_size
 
     def _add_leaf(self, points, weights):
-        points = CoresetKSeg.CoresetKSeg.compute_coreset(data=points, k=self.k, eps=self.eps)
+        points = CoresetKSeg.CoresetKSeg.compute_coreset(
+            data=points, k=self.k, eps=self.eps
+        )
         if weights is None:
             # weights = np.ones((points.shape[0])).ravel()
             weights = np.ones(len(points)).ravel()
@@ -99,7 +102,7 @@ class CoresetStreamer(Thread):
         return solution.points, solution.weights
 
     def __str__(self):
-        return '{}'.format(self.stack)
+        return "{}".format(self.stack)
 
 
 def batch(iterable_data, batch_size: int = 10, random_size_chunks: bool = False):
@@ -111,7 +114,9 @@ def batch(iterable_data, batch_size: int = 10, random_size_chunks: bool = False)
     while chunk_start < data_len:
         if random_size_chunks:
             current_chunk_size = random.randint(min_batch_size, max_batch_size)
-        yield iterable_data[chunk_start:min(chunk_start + current_chunk_size, data_len)]
+        yield iterable_data[
+            chunk_start : min(chunk_start + current_chunk_size, data_len)
+        ]
         chunk_start += current_chunk_size
 
 
@@ -121,11 +126,11 @@ def timeit(method):
         result = method(*args, **kw)
         te = time.time()
 
-        if 'log_time' in kw:
-            name = kw.get('log_name', method.__name__.upper())
-            kw['log_time'][name] = int((te - ts) * 1000)
+        if "log_time" in kw:
+            name = kw.get("log_name", method.__name__.upper())
+            kw["log_time"][name] = int((te - ts) * 1000)
         else:
-            print('%r  %2.2f ms' % (method.__name__, (te - ts) * 1000))
+            print("%r  %2.2f ms" % (method.__name__, (te - ts) * 1000))
         return result
 
     return timed
@@ -133,10 +138,14 @@ def timeit(method):
 
 @timeit
 def get_dividers(points: np.ndarray, col_to_divide_by: int = 0) -> List:
-    points = np.column_stack((np.arange(1, len(points) + 1), points[:, col_to_divide_by]))
+    points = np.column_stack(
+        (np.arange(1, len(points) + 1), points[:, col_to_divide_by])
+    )
     k = 4
     eps = 0.3
-    stream = CoresetStreamer(CoresetKSeg.CoresetKSeg, sample_size=200, eps=eps, k=k, streaming_context=None)
+    stream = CoresetStreamer(
+        CoresetKSeg.CoresetKSeg, sample_size=200, eps=eps, k=k, streaming_context=None
+    )
     for chunk in batch(points, batch_size=70, random_size_chunks=False):
         # print(len(chunk))
         stream.add_points(chunk)
@@ -148,19 +157,23 @@ def get_dividers(points: np.ndarray, col_to_divide_by: int = 0) -> List:
 
 @timeit
 def get_dividers_spark_no_tree(points: np.ndarray, col_to_divide_by: int = 0) -> List:
-    points = np.column_stack((np.arange(1, len(points) + 1), points[:, col_to_divide_by]))
+    points = np.column_stack(
+        (np.arange(1, len(points) + 1), points[:, col_to_divide_by])
+    )
     k = 5
     eps = 0.4
     chunk_size = 200
     aggregated_for_rdd = []
 
     for i in range(0, len(points), chunk_size):
-        aggregated_for_rdd.append(points[i:i + chunk_size])
+        aggregated_for_rdd.append(points[i : i + chunk_size])
 
     sc = SparkContext()
     data = sc.parallelize(aggregated_for_rdd)
 
-    all_coresets = data.map(lambda x: CoresetKSeg.CoresetKSeg.compute_coreset(x, k, eps)).collect()
+    all_coresets = data.map(
+        lambda x: CoresetKSeg.CoresetKSeg.compute_coreset(x, k, eps)
+    ).collect()
     sc.stop()
     tmp = []
     for t in all_coresets:
@@ -171,8 +184,8 @@ def get_dividers_spark_no_tree(points: np.ndarray, col_to_divide_by: int = 0) ->
     return dividers
 
 
-if __name__ == '__main__':
-    file_path = '/home/ge/k-segment/datasets/segmentation/KO_no_date.csv'
+if __name__ == "__main__":
+    file_path = "/home/ge/k-segment/datasets/segmentation/KO_no_date.csv"
     points = utils_seg.load_csv_into_dataframe(file_path).values
     print(get_dividers(points))
     print(get_dividers_spark_no_tree(points))
