@@ -191,8 +191,8 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
     d = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     k = "k=" + str(w_class.k)
     filename = "_".join([basename, d, k])  # e.g. 'log_im_120508_171442'
-    output_fig_path = os.path.join(os.getcwd(), 'output')
-    if not os.path.exists(output_fig_path ):
+    output_fig_path = os.path.join(os.path.dirname(__file__), 'output_figures')
+    if not os.path.exists(output_fig_path):
         os.makedirs(output_fig_path)
 
     # try:
