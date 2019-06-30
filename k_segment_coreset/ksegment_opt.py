@@ -1,8 +1,10 @@
 # import cupy as np
 import cProfile
-import datetime
 import os
 import sys
+from datetime import datetime
+from io import StringIO
+from pstats import Stats
 from time import time
 
 import imageio
@@ -188,7 +190,7 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
     #          verticalalignment = 'center', transform = ax.transAxes)
 
     basename = "log_im"
-    d = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    d = datetime.now().strftime("%Y%m%d_%H%M%S")
     k = "k=" + str(w_class.k)
     filename = "_".join([basename, d, k])  # e.g. 'log_im_120508_171442'
     output_fig_path = os.path.join(os.path.dirname(__file__), 'output_figures')
@@ -205,6 +207,7 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
     plt.savefig(output_fig_path)
     if show_fig:
         plt.show()
+    return output_fig_path
 
 
 @timer
@@ -236,7 +239,8 @@ def main(path: str = None, k: int = 4):
 
     print('class mat weight', w_class.total_weight, w_class.horizontal_dividers)
 
-    plot_results(w_class, show_fig=True, img_path=path)
+    path_to_fig =plot_results(w_class, show_fig=True, img_path=path)
+    return path_to_fig
 
 
 if __name__ == '__main__':
@@ -248,14 +252,23 @@ if __name__ == '__main__':
     if len(sys.argv) >= 3:
         file_path = sys.argv[1]
         k = int(sys.argv[2])
-        main(path=file_path, k=k)
+        out_fig = main(path=file_path, k=k)
 
     elif len(sys.argv) >= 2:
         file_path = sys.argv[1]
-        main(path=file_path)
+        out_fig = main(path=file_path)
 
     else:
-        main()
+        out_fig = main()
 
     cp.disable()
-    cp.print_stats('tottime')
+
+    s = StringIO()
+    ps = Stats(cp, stream=s).sort_stats('tottime')
+    ps.print_stats()
+
+    pre, ext = os.path.splitext(out_fig)
+    with open(pre + '.txt', 'w+') as f:
+        f.write(s.getvalue())
+
+    cp.dump_stats(pre)
