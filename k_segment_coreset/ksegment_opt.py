@@ -160,9 +160,11 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
     ax.set_ylim(bottom=-offset, top=w_class.mat_rows - offset)
     ax.set_xlim(left=-offset, right=w_class.mat_cols - offset)
 
-    img = imageio.imread(img_path)
-    ax.imshow(img, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
-    # ax.imshow(w_class.mat, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
+    if img_path is not None:
+        img = imageio.imread(img_path)
+        ax.imshow(img, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
+    else:
+        ax.imshow(w_class.mat, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
 
     plt.xticks([x for x in range(0, w_class.mat_cols, w_class.k)])
     plt.yticks([x for x in range(0, w_class.mat_rows, w_class.k)])
