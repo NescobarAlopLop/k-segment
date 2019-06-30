@@ -43,11 +43,24 @@ class KSegmentTestOpt(unittest.TestCase):
 
     def test_50px_image_for_a_range_of_ks(self):
         """
-        this function will run for a while
+        this function will run for a while, around 2 mins per iteration
         :return: None
         """
         for k in range(3, 10):
             test_file_path = path.join(dataset_dir, 'bar_code_50px.png')
+            cp.enable()
+            fig_path = ksegment_opt.main(path=test_file_path, k=k)
+            cp.disable()
+            dump_profiler_stats(cp, fig_path)
+            cp.clear()
+
+    def test_100px_image_for_a_range_of_ks(self):
+        """
+        this function will run for a while, around one hour per iteration
+        :return: None
+        """
+        for k in range(3, 10):
+            test_file_path = path.join(dataset_dir, 'bar_code_100px.png')
             cp.enable()
             fig_path = ksegment_opt.main(path=test_file_path, k=k)
             cp.disable()
