@@ -1,16 +1,13 @@
 # import cupy as np
 import cProfile
 import datetime
-from time import time
 import sys
-import imageio
+from time import time
 
+import imageio
 import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy import misc
-
-# from Queue import Queue
 
 
 cp = cProfile.Profile()
@@ -291,6 +288,7 @@ def main(path: str = None, k: int = 4):
 
 if __name__ == '__main__':
     cp.enable()
+
     file_path = None
     k = None
     print(sys.argv)
@@ -307,4 +305,4 @@ if __name__ == '__main__':
         main()
 
     cp.disable()
-    cp.print_stats()
+    cp.print_stats('tottime')
