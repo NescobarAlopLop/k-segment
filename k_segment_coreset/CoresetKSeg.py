@@ -45,6 +45,7 @@ class CoresetKSeg(object):
         self.is_coreset = False
         self.weights = weights
         self.k_eps_coreset = []
+        self.f = None
 
     def __call__(self, data):
         self.k_eps_coreset = self.compute_coreset(data, self.k, self.eps, self.f, self.is_coreset)
