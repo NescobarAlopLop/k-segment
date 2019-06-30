@@ -1,4 +1,3 @@
-# import cupy as np
 import cProfile
 import os
 import sys
@@ -39,7 +38,6 @@ class KMean(object):
     def __repr__(self):
         return '{}'.format(self.mat)
 
-    # main
     def best_sum_of_variances(self):
         if self.k == 1:
             self.total_weight = variance(self.mat)
@@ -50,11 +48,6 @@ class KMean(object):
                 self.d_ij_path[x, y] = self.best_segment(self.compute_distance_matrix(x, y))
             self.total_weight, self.horizontal_dividers = self.best_segment(self.d_ij_path)
         return self.total_weight, self.horizontal_dividers
-
-    # def create_queue(self):
-    #     for i in range(0, self.d_ij_path.shape[0]):
-    #         for j in range(i + 1, self.d_ij_path.shape[1]):
-    #             self.q.put((i, j))
 
     def best_segment(self, d):
         """
@@ -68,7 +61,6 @@ class KMean(object):
 
             3. Return path(dividers), \min_j F(k-1,j)+D(j,n), iterations, F
         """
-        # cp.enable()
         n = d.shape[1]
         _F = d.copy()                                           # 1. F(1,1:n)=D(1,1:n)
         _P = np.zeros(shape=(self.k, n), dtype=int)
@@ -197,11 +189,6 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
     if not os.path.exists(output_fig_path):
         os.makedirs(output_fig_path)
 
-    # try:
-    #     os.stat("output/")
-    # except:
-    #     os.mkdir("output/")
-    # plt.savefig("output/" + filename)
     output_fig_path = os.path.join(output_fig_path, filename)
     print("saving in {}".format(output_fig_path))
     plt.savefig(output_fig_path)
@@ -239,7 +226,7 @@ def main(path: str = None, k: int = 4):
 
     print('class mat weight', w_class.total_weight, w_class.horizontal_dividers)
 
-    path_to_fig =plot_results(w_class, show_fig=True, img_path=path)
+    path_to_fig = plot_results(w_class, show_fig=True, img_path=path)
     return path_to_fig
 
 
