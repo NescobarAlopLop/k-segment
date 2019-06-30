@@ -1,6 +1,7 @@
 # import cupy as np
 import cProfile
 import datetime
+import os
 import sys
 from time import time
 
@@ -9,6 +10,7 @@ import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import numpy as np
 
+# from utils_seg import best_fit_line_and_cost
 
 cp = cProfile.Profile()
 
@@ -91,7 +93,9 @@ class KMean(object):
             index_weight[j] = _F[self.k - 1 - 1, j]['weight'] + d[j, n - 1]['weight']
         _P[self.k - 1, n - 1] = min(index_weight, key=index_weight.get)
         # 1 line under the comment interchange 3 lines above the comment and makes code run slower
-        # _P[self.k - 1, n - 1] = np.argmin(_F[self.k - 1 - 1:self.k - 1, self.k - 1:n - 1]['weight'] + d[self.k - 1:n - 1, n - 1:n]['weight'].flatten())
+        # _P[self.k - 1, n - 1] = \
+        # np.argmin(_F[self.k - 1 - 1:self.k - 1, self.k - 1:n - 1]['weight'] \
+        # + d[self.k - 1:n - 1, n - 1:n]['weight'].flatten())
         # cp.disable()
         # in total profiling: numpy way: 22525 function calls in 0.024 seconds; 112494 function calls in 0.125 seconds
         #                    for loop way: 25568 function calls in 0.006 seconds; 239538 function calls in 0.057 seconds
@@ -134,6 +138,7 @@ def timer(func):
 
 def variance(arr):
     return mean_squared_distance(arr)
+    # return best_fit_line_and_cost(arr)[1]
 
 
 def mean_squared_distance(arr):
@@ -148,14 +153,16 @@ def mean_squared_distance(arr):
     return mse
 
 
-def plot_results(w_class, show_fig=False):
+def plot_results(w_class, show_fig=False, img_path: str=None):
     offset = 0.0
     fig, ax = plt.subplots()
 
     ax.set_ylim(bottom=-offset, top=w_class.mat_rows - offset)
     ax.set_xlim(left=-offset, right=w_class.mat_cols - offset)
 
-    ax.imshow(w_class.mat, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
+    img = imageio.imread(img_path)
+    ax.imshow(img, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
+    # ax.imshow(w_class.mat, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
 
     plt.xticks([x for x in range(0, w_class.mat_cols, w_class.k)])
     plt.yticks([x for x in range(0, w_class.mat_rows, w_class.k)])
@@ -182,12 +189,18 @@ def plot_results(w_class, show_fig=False):
     d = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     k = "k=" + str(w_class.k)
     filename = "_".join([basename, d, k])  # e.g. 'log_im_120508_171442'
-    import os
-    try:
-        os.stat("output/")
-    except:
-        os.mkdir("output/")
-    plt.savefig("output/" + filename)
+    output_fig_path = os.path.join(os.getcwd(), 'output')
+    if not os.path.exists(output_fig_path ):
+        os.makedirs(output_fig_path)
+
+    # try:
+    #     os.stat("output/")
+    # except:
+    #     os.mkdir("output/")
+    # plt.savefig("output/" + filename)
+    output_fig_path = os.path.join(output_fig_path, filename)
+    print("saving in {}".format(output_fig_path))
+    plt.savefig(output_fig_path)
     if show_fig:
         plt.show()
 
@@ -215,11 +228,13 @@ def main(path: str = None, k: int = 4):
     if path is not None:
         nine_parts = imageio.imread(path)
         nine_parts = np.array(nine_parts).mean(axis=2)
-    w_class = KMean(nine_parts, k=k)
+
+    w_class = KMean(mat=nine_parts, k=k)
     w_class.best_sum_of_variances()
+
     print('class mat weight', w_class.total_weight, w_class.horizontal_dividers)
 
-    plot_results(w_class, show_fig=False)
+    plot_results(w_class, show_fig=True, img_path=path)
 
 
 if __name__ == '__main__':
