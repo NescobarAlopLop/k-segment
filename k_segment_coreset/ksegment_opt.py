@@ -197,6 +197,10 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
     return output_fig_path
 
 
+# TODO: save figure in separate func:
+# def save_plot_as_image(fig, path=''):
+
+
 @timer
 def main(path: str = None, k: int = 4):
 
