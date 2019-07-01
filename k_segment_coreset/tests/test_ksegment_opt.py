@@ -9,6 +9,8 @@ import numpy as np
 import imageio as io
 import ksegment_opt
 from scipy import ndimage
+from pyspark import SparkContext
+
 
 cp = cProfile.Profile()
 
@@ -108,16 +110,14 @@ class KSegmentTestOpt(unittest.TestCase):
     def test_time_complexity_on_image(self, img_path='/home/george/k-segment-2d/datasets/segmentation/bar_code.png'):
         img = io.imread(img_path, as_gray=True)
         tmp = []
-
-        for zoom in range(3, 100):
-            show = True
-            for k in range(3, 10):
-                test_data = ndimage.zoom(img, zoom / 100.0)
+        # zoom in percent from image
+        for zoom in range(4, 100):
+            test_data = ndimage.zoom(img, zoom / 100.0)
+            for k in range(3, 13, 3):
                 time_before = time()
                 cp.enable()
                 try:
-                    fig_path = ksegment_opt.main(in_data=test_data, k=k, show_fig=show)
-                    show = False
+                    fig_path = ksegment_opt.main(in_data=test_data, k=k, show_fig=False)
                 except Exception as e:
                     print(e)
                 cp.disable()
@@ -127,7 +127,36 @@ class KSegmentTestOpt(unittest.TestCase):
                 tmp.append((k, zoom, time_after - time_before, fig_path))
 
             save_and_plot_stats(tmp, fig_path, k, zoom)
-        save_and_plot_stats(tmp, fig_path, k, zoom)
+        save_and_plot_stats(tmp, fig_path, k, test_data.shape[1])
+
+    def test_time_complexity_on_image_in_parallel(self, img_path='/home/george/k-segment-2d/datasets/segmentation/bar_code.png'):
+        img = io.imread(img_path, as_gray=True)
+
+        num_threads = 4  # equal to num k's to test starting from k = 3 in increments of 3
+        sc = SparkContext()
+
+        tmp = []
+        for zoom in range(4, 100):
+            # zoom in percent from image
+            test_data = ndimage.zoom(img, zoom / 100.0)
+            data = sc.parallelize([(test_data, k) for k in range(3, 3 * num_threads + 1, 3)], num_threads)
+            res_rdd = data.map(lambda x: ksegment_opt.main(np.array(x[0]), x[1]))
+
+            time_before = time()
+            cp.enable()
+            fig_paths = res_rdd.collect()
+            cp.disable()
+            time_after = time()
+
+            dump_profiler_stats(cp, fig_paths[0])
+            cp.clear()
+
+            tmp.append((-1, zoom, time_after - time_before, fig_paths[0]))
+
+            save_and_plot_stats(tmp, fig_paths[0], -1, zoom)
+        save_and_plot_stats(tmp, fig_paths[0], -1, test_data.shape[1])
+
+        sc.stop()
 
 
 def save_and_plot_stats(in_arr, file_name, k, size):
