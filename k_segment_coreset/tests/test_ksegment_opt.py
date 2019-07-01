@@ -175,5 +175,5 @@ def save_and_plot_stats(in_arr, file_name, k, size):
         plt.plot(stats[current]['size'], stats[current]['time'], label='k={}'.format(k))
 
     plt.legend()
+    plt.savefig(stats_path + ".png")
     plt.show()
-    plt.savefig(stats_path)
