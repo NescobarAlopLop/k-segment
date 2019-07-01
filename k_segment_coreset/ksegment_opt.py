@@ -5,6 +5,7 @@ from datetime import datetime
 from io import StringIO
 from pstats import Stats
 from time import time
+from typing import Union
 
 import imageio
 import matplotlib.lines as lines
@@ -154,7 +155,7 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
     ax.set_ylim(bottom=-offset, top=w_class.mat_rows - offset)
     ax.set_xlim(left=-offset, right=w_class.mat_cols - offset)
 
-    if img_path is not None:
+    if type(img_path) is str:
         img = imageio.imread(img_path)
         ax.imshow(img, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
     else:
@@ -202,9 +203,9 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
 
 
 @timer
-def main(path: str = None, k: int = 4):
+def main(in_data: Union[str, np.ndarray], k: int = 4, show_fig=True):
 
-    nine_parts = np.array([
+    data = np.array([
         [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
         [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
         [40, 40, 40, 40, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
@@ -221,16 +222,18 @@ def main(path: str = None, k: int = 4):
         [20, 20, 20, 20, 40, 40, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
     ])
 
-    if path is not None:
-        nine_parts = imageio.imread(path)
-        nine_parts = np.array(nine_parts).mean(axis=2)
+    if type(in_data) is type('str'):
+        data = imageio.imread(in_data)
+        data = np.array(data).mean(axis=2)
+    if type(in_data) is type(data):
+        data = in_data
 
-    w_class = KMean(mat=nine_parts, k=k)
+    w_class = KMean(mat=data, k=k)
     w_class.best_sum_of_variances()
 
     print('class mat weight', w_class.total_weight, w_class.horizontal_dividers)
 
-    path_to_fig = plot_results(w_class, show_fig=True, img_path=path)
+    path_to_fig = plot_results(w_class, show_fig=show_fig, img_path=in_data)
     return path_to_fig
 
 
@@ -243,11 +246,11 @@ if __name__ == '__main__':
     if len(sys.argv) >= 3:
         file_path = sys.argv[1]
         k = int(sys.argv[2])
-        out_fig = main(path=file_path, k=k)
+        out_fig = main(in_data=file_path, k=k)
 
     elif len(sys.argv) >= 2:
         file_path = sys.argv[1]
-        out_fig = main(path=file_path)
+        out_fig = main(in_data=file_path)
 
     else:
         out_fig = main()
