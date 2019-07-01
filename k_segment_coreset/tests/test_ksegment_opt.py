@@ -88,14 +88,12 @@ class KSegmentTestOpt(unittest.TestCase):
 
         tmp = []
         for size in range(3, 60):
-            # show = True
             for k in range(3, 13, 3):
                 test_data = np.random.randint(0, 255, (size, size))
                 time_before = time()
                 # cp.enable()
                 try:
                     fig_path = ksegment_opt.main(in_data=test_data, k=k, show_fig=False)
-                    # show = False
                 except Exception as e:
                     print(e)
                 # cp.disable()
@@ -104,8 +102,6 @@ class KSegmentTestOpt(unittest.TestCase):
                 # cp.clear()
                 tmp.append((k, size, time_after - time_before, fig_path))
 
-                # if size % 10 == 0:
-                #     save_and_plot_stats(tmp, fig_path, k, size)
             save_and_plot_stats(tmp, fig_path, k, size)
         save_and_plot_stats(tmp, fig_path, k, size)
 
