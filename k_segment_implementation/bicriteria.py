@@ -2,7 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import sys
-from skimage import io
+import imageio as io
+# from skimage import io
 import numpy as np
 import heapq
 try:
@@ -119,7 +120,6 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    print("Python version: {}".format(sys.version))
     ret = main(sys.argv)
     if ret is not None:
         sys.exit(ret)
