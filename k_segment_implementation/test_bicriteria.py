@@ -150,3 +150,21 @@ class UtilsTest(unittest.TestCase):
         plt.imshow(img_file)
         plot_lines_on_plot(plt, points)
         plt.show()
+
+    @staticmethod
+    def test_with_orange():
+        img_file = imageio.imread('/home/ge/k-segment/datasets/segmentation/oranges.png', )
+        flat_img = np.mean(img_file, axis=2)
+        k = 2
+        depth = 2
+
+        data2 = np.asarray(flat_img)
+
+        _, _, divs = bicriteria(data2, k, depth, best_fit_line_and_cost, calc_best_fit_line_polyfit)
+        points = get_dividers_point_pairs_for_drawing(divs)
+        plt.figure()  # (figsize=(16, 9), dpi=200)
+        plt.grid(True)
+
+        plt.imshow(img_file)
+        plot_lines_on_plot(plt, points)
+        plt.show()
