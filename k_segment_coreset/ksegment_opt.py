@@ -17,7 +17,7 @@ import numpy as np
 cp = cProfile.Profile()
 
 
-class AlgException(Exception):
+class KsegmentOptException(Exception):
     pass
 
 
@@ -40,7 +40,7 @@ class KMean(object):
         if 1 <= k <= min(self.mat_rows, self.mat_cols):
             self.k = k
         else:
-            raise AlgException("k={}, but has to be: {} < k <= {}, defined by shape of input"
+            raise KsegmentOptException("k={}, but has to be: {} < k <= {}, defined by shape of input"
                                .format(k, 1, min(self.mat_rows, self.mat_cols)))
         self.cost_func = cost_func
         dt = np.dtype([('weight', np.float32), ('path', np.uint32, (k + 1,))])
@@ -94,7 +94,7 @@ class KMean(object):
                 _P[z, x], _F[z, x] = np.argmin(min_weight), min_weight.min()
 
         except IndexError:
-            assert AlgException('index out of range')
+            assert KsegmentOptException('index out of range')
 
         index_weight = {}
         for j in range(self.k - 1, n - 1):                      # 3. Return \min_j F(k-1,j)+D(j,n)
