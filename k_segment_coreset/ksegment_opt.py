@@ -25,7 +25,8 @@ def load_img_as_greyscale(path: str):
     return imageio.imread(path, as_gray=False, pilmode="RGB")
 
 
-def binarize_img(img: Union[np.ndarray, io.core.util.Array], threshold: int = 140) -> Union[np.ndarray, io.core.util.Array]:
+def binarize_img(img: Union[np.ndarray, imageio.core.util.Array],
+                 threshold: int = 140) -> Union[np.ndarray, imageio.core.util.Array]:
     return 1 * (img > threshold)
 
 
