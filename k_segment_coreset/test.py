@@ -14,13 +14,16 @@ def generate_input_file(n):
 class KSegmentTest(unittest.TestCase):
     # cProfile.run('re.compile("test_coreset_merging")')
 
-    def test_basic_demo(self):
+    def test_basic_demo(self, in_scv=None, delimiter=" "):
         # generate points
         k = 3
         epsilon = 0.5
         n = 600
-        generate_input_file(n)
-        data = np.genfromtxt("input.csv", delimiter=" ")
+        if in_scv is None:
+            generate_input_file(n)
+            data = np.genfromtxt("input.csv", delimiter=" ")
+        else:
+            data = np.genfromtxt(in_scv, delimiter=delimiter)
         p = np.c_[np.mgrid[1:n + 1], data]
 
         coreset = CoresetKSeg.CoresetKSeg.compute_coreset(p, k, epsilon)
