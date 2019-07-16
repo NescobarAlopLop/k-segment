@@ -32,6 +32,13 @@ def mean_squared_distance(arr):
         mse += np.linalg.norm(np.mean(arr) - p) ** 2
     return mse
 
+def one_center_cost(arr):
+    """
+    
+    :param arr:
+    :return:
+    """
+
 
 class KMean(object):
     def __init__(self, mat, k, cost_func=mean_squared_distance):
@@ -199,7 +206,7 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
 
 
 @timer
-def main(in_data: Union[str, np.ndarray], k: int = 4, show_fig=True):
+def main(in_data=None, k=4, show_fig=True):
 
     data = np.array([
         [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
@@ -218,11 +225,11 @@ def main(in_data: Union[str, np.ndarray], k: int = 4, show_fig=True):
         [20, 20, 20, 20, 40, 40, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
     ])
 
-    if type(in_data) is type('str'):
-        data = imageio.imread(in_data)
-        data = np.array(data).mean(axis=2)
-    if type(in_data) is type(data):
-        data = in_data
+    # if type(in_data) is type('str'):
+    #     data = imageio.imread(in_data)
+    #     data = np.array(data).mean(axis=2)
+    # if type(in_data) is type(data):
+    #     data = in_data
 
     w_class = KMean(mat=data, k=k)
     w_class.best_sum_of_variances()
