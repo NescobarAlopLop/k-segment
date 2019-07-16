@@ -5,7 +5,7 @@ from datetime import datetime
 from io import StringIO
 from pstats import Stats
 from time import time
-from typing import Union
+from typing import Union, Optional
 
 import imageio
 import matplotlib.lines as lines
@@ -19,6 +19,14 @@ cp = cProfile.Profile()
 
 class KsegmentOptException(Exception):
     pass
+
+
+def load_img_as_greyscale(path: str):
+    return imageio.imread(path, as_gray=False, pilmode="RGB")
+
+
+def binarize_img(img: Union[np.ndarray, io.core.util.Array], threshold: int = 140) -> Union[np.ndarray, io.core.util.Array]:
+    return 1 * (img > threshold)
 
 
 def mean_squared_distance(arr):
@@ -199,7 +207,7 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
 
 
 @timer
-def main(in_data: Union[str, np.ndarray], k: int = 4, show_fig=True):
+def main(in_data=None, k=4, show_fig=True):
 
     data = np.array([
         [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
