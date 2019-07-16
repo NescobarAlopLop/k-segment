@@ -158,6 +158,17 @@ class KSegmentTestOpt(unittest.TestCase):
 
         sc.stop()
 
+    def test_binary_image_one_level(self):
+        def one_centre_cost(arr):
+            points_locations = np.where(arr == 1)
+            random_point = np.random.choice(len(points_locations[0]))
+            x, y = points_locations[0][random_point], points_locations[1][random_point]
+            print(x, y)
+        def convert_to_binary_img(threashold: int = 140):
+            return
+
+        def load_image(path: str = '/home/ge/k-segment/datasets/segmentation/one_center_cost_func_input/level1.png'):
+            return io.imread(path, as_gray=False, pilmode="RGB")
 
 def save_and_plot_stats(in_arr, file_name, k, size):
 
