@@ -7,7 +7,7 @@ from pstats import Stats
 from time import time
 from typing import Union, Optional
 
-import imageio
+import imageio as io
 import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,7 +25,8 @@ def load_img_as_greyscale(path: str):
     return imageio.imread(path, as_gray=False, pilmode="RGB")
 
 
-def binarize_img(img: Union[np.ndarray, io.core.util.Array], threshold: int = 140) -> Union[np.ndarray, io.core.util.Array]:
+def binarize_img(img: Union[np.ndarray, io.core.util.Array], threshold: int = 140) -> Union[
+    np.ndarray, io.core.util.Array]:
     return 1 * (img > threshold)
 
 
@@ -40,12 +41,19 @@ def mean_squared_distance(arr):
         mse += np.linalg.norm(np.mean(arr) - p) ** 2
     return mse
 
+
 def one_center_cost(arr):
     """
-    
-    :param arr:
-    :return:
+    Computes the OCC of arr points
+    :param arr: array of points in any dimension
+    :return: OCC between each point
     """
+    bin_arr = binarize_img(arr)
+    tuples = np.where(bin_arr == 1)
+    first_point = np.ndarray(tuples[0][0], tuples[1][0])
+    # for i, j in zip(tuples[0], tuples[1]):
+    #     np.linalg.norm(first_point - (i,j))
+    np.linalg.norm(first_point - np.column_stack(tuples[:]), axis=)
 
 
 class KMean(object):
@@ -56,7 +64,7 @@ class KMean(object):
             self.k = k
         else:
             raise KsegmentOptException("k={}, but has to be: {} < k <= {}, defined by shape of input"
-                               .format(k, 1, min(self.mat_rows, self.mat_cols)))
+                                       .format(k, 1, min(self.mat_rows, self.mat_cols)))
         self.cost_func = cost_func
         dt = np.dtype([('weight', np.float32), ('path', np.uint32, (k + 1,))])
         self.d_ij_path = np.zeros((self.mat_rows + 1, self.mat_rows + 1), dtype=dt)
@@ -91,7 +99,7 @@ class KMean(object):
             3. Return path(dividers), \min_j F(k-1,j)+D(j,n), iterations, F
         """
         n = d.shape[1]
-        _F = d.copy()                                           # 1. F(1,1:n)=D(1,1:n)
+        _F = d.copy()  # 1. F(1,1:n)=D(1,1:n)
         _P = np.zeros(shape=(self.k, n), dtype=int)
         try:
             # 2. For m=2 to k-1   k last one is not used so k-1
@@ -105,14 +113,14 @@ class KMean(object):
                 #     _P[z, x], _F[z, x] = min(index_weight.items(), key=lambda val: val[1])
                 # 2 lines after the comment interchange 5 lines above it
                 # and make the code run slower, although less function calls
-                min_weight = _F[z - 1:z, :]['weight'] + d[:, x:x+1]['weight'].flatten()
+                min_weight = _F[z - 1:z, :]['weight'] + d[:, x:x + 1]['weight'].flatten()
                 _P[z, x], _F[z, x] = np.argmin(min_weight), min_weight.min()
 
         except IndexError:
             assert KsegmentOptException('index out of range')
 
         index_weight = {}
-        for j in range(self.k - 1, n - 1):                      # 3. Return \min_j F(k-1,j)+D(j,n)
+        for j in range(self.k - 1, n - 1):  # 3. Return \min_j F(k-1,j)+D(j,n)
             index_weight[j] = _F[self.k - 1 - 1, j]['weight'] + d[j, n - 1]['weight']
         _P[self.k - 1, n - 1] = min(index_weight, key=index_weight.get)
         # 1 line under the comment interchange 3 lines above the comment and makes code run slower
@@ -150,16 +158,18 @@ def timer(func):
     :param func: any params required by a function it is called on
     :return: function it was called on
     """
+
     def f(*args, **kwargs):
         time_before = time()
         rv = func(*args, **kwargs)
         time_after = time()
         print("elapsed: {}".format(time_after - time_before))
         return rv
+
     return f
 
 
-def plot_results(w_class, show_fig=False, img_path: str=None):
+def plot_results(w_class, show_fig=False, img_path: str = None):
     offset = 0.0
     fig, ax = plt.subplots()
 
@@ -189,7 +199,7 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
             ax.add_line(vertical_separation)
 
     plt.grid(False)
-    plt.title('optimal segmentation, k='+str(w_class.k))
+    plt.title('optimal segmentation, k=' + str(w_class.k))
     # plt.text(0.5, 0.5, str(w_class.k), horizontalalignment='center',
     #          verticalalignment = 'center', transform = ax.transAxes)
 
@@ -215,7 +225,6 @@ def plot_results(w_class, show_fig=False, img_path: str=None):
 
 @timer
 def main(in_data=None, k=4, show_fig=True):
-
     data = np.array([
         [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
         [10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 50, 50],
@@ -231,7 +240,7 @@ def main(in_data=None, k=4, show_fig=True):
         [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
         [20, 20, 20, 20, 20, 20, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
         [20, 20, 20, 20, 40, 40, 40, 40, 40, 40, 10, 10, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 50, 30, 30, 30],
-    ])
+    ]) * 5
 
     # if type(in_data) is type('str'):
     #     data = imageio.imread(in_data)
