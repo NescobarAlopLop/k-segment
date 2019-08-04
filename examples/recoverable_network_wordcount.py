@@ -100,7 +100,6 @@ if __name__ == "__main__":
               "<checkpoint-directory> <output-file>", file=sys.stderr)
         sys.exit(-1)
     host, port, checkpoint, output = sys.argv[1:]
-    ssc = StreamingContext.getOrCreate(checkpoint,
-                                       lambda: createContext(host, int(port), output))
+    ssc = StreamingContext.getOrCreate(checkpoint, lambda: createContext(host, int(port), output))
     ssc.start()
     ssc.awaitTermination()
