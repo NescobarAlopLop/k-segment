@@ -22,7 +22,7 @@ class KsegmentOptException(Exception):
 
 
 def load_img_as_greyscale(path: str):
-    return imageio.imread(path, as_gray=False, pilmode="RGB")
+    return io.imread(path, as_gray=False, pilmode="RGB")
 
 
 def binarize_img(img: Union[np.ndarray, io.core.util.Array], threshold: int = 140) -> Union[
@@ -50,10 +50,13 @@ def one_center_cost(arr):
     """
     bin_arr = binarize_img(arr)
     tuples = np.where(bin_arr == 1)
-    first_point = np.ndarray(tuples[0][0], tuples[1][0])
+    first_point = np.array([tuples[0][0], tuples[1][0]])
     # for i, j in zip(tuples[0], tuples[1]):
     #     np.linalg.norm(first_point - (i,j))
-    np.linalg.norm(first_point - np.column_stack(tuples[:]), axis=)
+    norms = np.linalg.norm(first_point - np.column_stack(tuples[:]), axis=1)
+    index_of_farthest_point = np.where(norms == max(norms))
+    farthest_point = np.array([tuples[0][index_of_farthest_point], tuples[1][index_of_farthest_point]])
+    return max(norms)
 
 
 class KMean(object):
@@ -177,7 +180,7 @@ def plot_results(w_class, show_fig=False, img_path: str = None):
     ax.set_xlim(left=-offset, right=w_class.mat_cols - offset)
 
     if type(img_path) is str:
-        img = imageio.imread(img_path)
+        img = io.imread(img_path)
         ax.imshow(img, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
     else:
         ax.imshow(w_class.mat, extent=[-offset, w_class.mat_cols + offset, - offset, w_class.mat_rows + offset])
